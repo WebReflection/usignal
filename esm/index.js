@@ -1,6 +1,13 @@
 /*! (c) Andrea Giammarchi */
 
 let batches;
+
+/**
+ * Execute a callback that will not side-effect until its top-most batch is
+ * completed.
+ * @param {function} callback a function that batches changes to be notified
+ *  through signals.
+ */
 export const batch = fn => {
   const prev = batches;
   batches = new Set;
@@ -13,6 +20,11 @@ export const batch = fn => {
 };
 
 let effects;
+
+/**
+ * Expose and invoke a callback as side-effect target to signal changes.
+ * @param {function} callback the callback to make signals reactive
+ */
 export const effect = fn => {
   const prev = effects;
   effects = fn;
@@ -29,7 +41,13 @@ export const effect = fn => {
 // I think we can differenziate between Signal and
 // Computed as I did before ... but hey, folks out there
 // already landed this, and I am OK(ish) with it.
+
 export class Signal {
+  /**
+   * A specialized class that represents both normal and computed signals.
+   * **Do not use this class if not for brand-checking signals around**.
+   * @param {any} value the Signal value
+   */
   constructor(_) { this._ = _ }
 }
 
@@ -58,6 +76,12 @@ class Computed extends Signal {
   valueOf() { return this.value }
 }
 
+/**
+ * Returns a read-only Signal that is invoked only when any of the internally
+ * used signals, as in within the callback, is unknown or updated.
+ * @param {function} callback a function that can computes and return any value
+ * @returns {Signal}
+ */
 export const computed = value => new Computed(value);
 
 class Reactive extends Signal {
@@ -86,4 +110,9 @@ class Reactive extends Signal {
   valueOf() { return this._ }
 }
 
+/**
+ * Returns a writable Signal that side-effects whenever its value gets updated.
+ * @param {any} value the value the Signal should carry along
+ * @returns {Signal}
+ */
 export const signal = value => new Reactive(value);

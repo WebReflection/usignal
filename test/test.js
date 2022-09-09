@@ -188,16 +188,22 @@ export default (name, testValueOf, {signal, computed, effect, batch}) => {
       return A.value + B.value;
     });
 
-    console.log('before', {
-      B: [B.value, BCalc],
-      C: [C.value, CCalc]
-    });
+    assert(
+      JSON.stringify({
+        B: [B.value, BCalc],
+        C: [C.value, CCalc]
+      }) === '{"B":[1,1],"C":[1,1]}',
+      'unexpected amount of invokes'
+    );
 
     A.value = 1;
 
-    console.log('after', {
-      B: [B.value, BCalc],
-      C: [C.value, CCalc]
-    });
+    assert(
+      JSON.stringify({
+        B: [B.value, BCalc],
+        C: [C.value, CCalc]
+      }) === '{"B":[2,2],"C":[3,2]}',
+      'unexpected amount of invokes after single change'
+    );
   }
 };
