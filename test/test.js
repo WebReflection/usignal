@@ -17,6 +17,7 @@ export default (name, testValueOf, {signal, computed, effect, batch}) => {
   nestedBatch();
   readOnly();
   testPeek();
+  testComputedUniqueness();
 
   function testPrimitive() {
     const str = signal('string');
@@ -153,5 +154,23 @@ export default (name, testValueOf, {signal, computed, effect, batch}) => {
 
     counter.value = 1;
     assert(invokes.length === 1, 'peek not working as expected');
+  }
+
+  function testComputedUniqueness() {
+    let invokes = 0;
+    const name = signal('Jane');
+    const surname = {
+      get value() {
+        invokes++;
+        return 'Doe';
+      }
+    };
+    const fullName = computed(() => name.value + ' ' + surname.value);
+    assert(fullName.value === 'Jane Doe', 'computed not working');
+    assert(invokes === 1, 'computed value should have been invoked once');
+    name.value = 'John';
+    assert(invokes === 2, 'computed value should have been again');
+    name.value = 'John';
+    assert(invokes === 2, 'computed value should NOT have been again');
   }
 };
