@@ -26,9 +26,9 @@ exports.effect = effect;
 const signals = new WeakMap;
 const signal = value => {
   const out = {
-    valueOf,
-    peek: valueOf,
-    toString: valueOf,
+    peek,
+    toString: peek,
+    valueOf: peek,
     get value() {
       if (effects)
         signals.get(this).add(effects);
@@ -46,8 +46,8 @@ const signal = value => {
 exports.signal = signal;
 
 const computed = value => ({
-  valueOf,
-  toString: valueOf,
+  toString: peek,
+  valueOf: peek,
   get value() {
     return value();
   },
@@ -57,6 +57,6 @@ const computed = value => ({
 });
 exports.computed = computed;
 
-function valueOf() {
+function peek() {
   return this.value;
 }

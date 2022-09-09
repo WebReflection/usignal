@@ -23,9 +23,9 @@ export const effect = fn => {
 const signals = new WeakMap;
 export const signal = value => {
   const out = {
-    valueOf,
-    peek: valueOf,
-    toString: valueOf,
+    peek,
+    toString: peek,
+    valueOf: peek,
     get value() {
       if (effects)
         signals.get(this).add(effects);
@@ -42,8 +42,8 @@ export const signal = value => {
 };
 
 export const computed = value => ({
-  valueOf,
-  toString: valueOf,
+  toString: peek,
+  valueOf: peek,
   get value() {
     return value();
   },
@@ -52,6 +52,6 @@ export const computed = value => ({
   }
 });
 
-function valueOf() {
+function peek() {
   return this.value;
 }
