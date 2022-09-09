@@ -10,7 +10,7 @@
     "size": "cat es.js | brotli | wc -c",
     "coverage": "mkdir -p ./coverage; c8 report --reporter=text-lcov > ./coverage/lcov.info"
   },
-  "keywords": [],
+  "keywords": ["signal", "signals", "alternative"],
   "author": "Andrea Gimmarchi",
   "license": "ISC",
   "devDependencies": {
