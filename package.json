@@ -1,6 +1,6 @@
 {
   "name": "usignal",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "main": "./cjs/index.js",
   "scripts": {
     "build": "npm run cjs && npm run rollup:es && npm run test && npm run size",
