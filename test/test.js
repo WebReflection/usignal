@@ -97,7 +97,7 @@ module.exports = (name, testValueOf, {signal, computed, effect, batch}) => {
 
     batch(() => {
       counter.value = 1;
-      assert(double.value === 2);
+      assert(double.value === 2, 'computed side-effecting within batch');
     });
 
     assert(invokes.length === 2, 'unexpected more batched result');
