@@ -20,10 +20,13 @@ export const effect = fn => {
   finally { effects = prev; }
 };
 
-class Computed {
+export class Signal {
   constructor(_) {
     this._ = _;
   }
+}
+
+class Computed extends Signal {
   get value() {
     return this._();
   }
@@ -36,10 +39,9 @@ class Computed {
 
 export const computed = value => new Computed(value);
 
-class Signal {
+class Reactive extends Signal {
   constructor(_) {
-    this._ = _;
-    this.$ = new Set;
+    super(_).$ = new Set;
   }
   get value() {
     if (effects)
@@ -47,13 +49,15 @@ class Signal {
     return this._;
   }
   set value(_) {
-    this._ = _;
-    for (const fn of this.$)
-      batches ? batches.add(fn) : fn();
+    if (this._ !== _) {
+      this._ = _;
+      for (const fn of this.$)
+        batches ? batches.add(fn) : fn();
+    }
   }
   peek() { return this._ }
   toString() { return this._ }
   valueOf() { return this._ }
 }
 
-export const signal = value => new Signal(value);
+export const signal = value => new Reactive(value);

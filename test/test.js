@@ -16,6 +16,7 @@ module.exports = (name, testValueOf, {signal, computed, effect, batch}) => {
   testBatchMore();
   nestedBatch();
   readOnly();
+  testPeek();
 
   function testPrimitive() {
     const str = signal('string');
@@ -49,6 +50,11 @@ module.exports = (name, testValueOf, {signal, computed, effect, batch}) => {
     name.value = 'John';
     assert(invokes.length === 2, 'effect not re-invoked');
     assert(invokes.join('\n') === 'Jane Doe\nJohn Doe', 'unexpected effect');
+
+    // testing same value doesn't side-effect
+    name.value = 'John';
+    assert(invokes.length === 2, 'effect side-effecting');
+    assert(invokes.join('\n') === 'Jane Doe\nJohn Doe', 'unexpected side-effect');
 
     name.value = 'Jane';
     surname.value = 'Deo';
