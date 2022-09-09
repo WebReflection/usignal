@@ -30,6 +30,8 @@ export default (name, testValueOf, {signal, computed, effect, batch}) => {
     const fullName = computed(() => name.value + ' ' + surname.value);
 
     assert(fullName.value === 'Jane Doe', 'computed not working');
+    assert(`${fullName}` === 'Jane Doe', 'computed toString not working');
+    assert(`${fullName + ''}` === 'Jane Doe', 'computed valueOf not working');
 
     name.value = 'John';
     assert(fullName.value === 'John Doe', 'computed not updating');
