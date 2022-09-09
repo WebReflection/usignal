@@ -1,7 +1,6 @@
 {
   "name": "usignal",
-  "version": "0.0.0",
-  "description": "",
+  "version": "0.0.1",
   "main": "./cjs/index.js",
   "scripts": {
     "build": "npm run cjs && npm run rollup:es && npm run test && npm run size",
@@ -30,5 +29,17 @@
     },
     "./package.json": "./package.json"
   },
-  "unpkg": "es.js"
+  "unpkg": "es.js",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WebReflection/usignal.git"
+  },
+  "bugs": {
+    "url": "https://github.com/WebReflection/usignal/issues"
+  },
+  "homepage": "https://github.com/WebReflection/usignal#readme",
+  "description": ""
 }
