@@ -131,4 +131,19 @@ module.exports = (name, testValueOf, {signal, computed, effect, batch}) => {
     }
     catch (expected) {}
   }
+
+  function testPeek() {
+    const invokes = [];
+    const counter = signal(0);
+
+    effect(() => {
+      invokes.push(counter.peek());
+    });
+
+    assert(invokes.length === 1, 'effect not working in peek');
+    assert(invokes[0] === 0, 'peek not returning right value');
+
+    counter.value = 1;
+    assert(invokes.length === 1, 'peek not working as expected');
+  }
 };

@@ -20,38 +20,40 @@ export const effect = fn => {
   finally { effects = prev; }
 };
 
-const signals = new WeakMap;
-export const signal = value => {
-  const out = {
-    peek,
-    toString: peek,
-    valueOf: peek,
-    get value() {
-      if (effects)
-        signals.get(this).add(effects);
-      return value;
-    },
-    set value(current) {
-      value = current;
-      for (const fn of signals.get(this))
-        batches ? batches.add(fn) : fn();
-    }
-  };
-  signals.set(out, new Set);
-  return out;
-};
-
-export const computed = value => ({
-  toString: peek,
-  valueOf: peek,
+class Computed {
+  constructor(_) {
+    this._ = _;
+  }
   get value() {
-    return value();
-  },
+    return this._();
+  }
   set value(_) {
     throw new Error('computed are read-only');
   }
-});
-
-function peek() {
-  return this.value;
+  toString() { return this._() }
+  valueOf() { return this._() }
 }
+
+export const computed = value => new Computed(value);
+
+class Signal {
+  constructor(_) {
+    this._ = _;
+    this.$ = new Set;
+  }
+  get value() {
+    if (effects)
+      this.$.add(effects);
+    return this._;
+  }
+  set value(_) {
+    this._ = _;
+    for (const fn of this.$)
+      batches ? batches.add(fn) : fn();
+  }
+  peek() { return this._ }
+  toString() { return this._ }
+  valueOf() { return this._ }
+}
+
+export const signal = value => new Signal(value);
