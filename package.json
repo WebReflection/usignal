@@ -1,0 +1,34 @@
+{
+  "name": "usignal",
+  "version": "0.0.0",
+  "description": "",
+  "main": "./cjs/index.js",
+  "scripts": {
+    "build": "npm run cjs && npm run rollup:es && npm run test && npm run size",
+    "cjs": "ascjs esm cjs",
+    "rollup:es": "rollup --config rollup/es.config.js",
+    "test": "c8 node test/index.js",
+    "size": "cat es.js | brotli | wc -c",
+    "coverage": "mkdir -p ./coverage; c8 report --reporter=text-lcov > ./coverage/lcov.info"
+  },
+  "keywords": [],
+  "author": "Andrea Gimmarchi",
+  "license": "ISC",
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^14.0.1",
+    "ascjs": "^5.0.1",
+    "c8": "^7.12.0",
+    "rollup": "^2.79.0",
+    "rollup-plugin-terser": "^7.0.2"
+  },
+  "module": "./esm/index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./esm/index.js",
+      "default": "./cjs/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "unpkg": "es.js"
+}

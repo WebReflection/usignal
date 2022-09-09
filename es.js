@@ -1,0 +1,2 @@
+/*! (c) Andrea Giammarchi */
+let t=null;const e=e=>{let n=t;t=new Set,e();for(const e of t)n?n.add(e):e();t=n};let n=null;const o=t=>{const e=n;n=t,t(),n=e},l=new WeakMap,r=e=>{const o={valueOf:a,peek:a,toString:a,get value(){return n&&l.get(this).add(n),e},set value(n){e=n;for(const e of l.get(this))t?t.add(e):e()}};return l.set(o,new Set),o},u=t=>({valueOf:a,toString:a,get value(){return t()}});function a(){return this.value}export{e as batch,u as computed,o as effect,r as signal};
