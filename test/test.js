@@ -1,4 +1,4 @@
-module.exports = (name, testValueOf, {signal, computed, effect, batch}) => {
+export default (name, testValueOf, {signal, computed, effect, batch}) => {
 
   const assert = (what, why) => {
     console.assert(what);

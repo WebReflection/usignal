@@ -1,1 +1,1 @@
-{"type":"commonjs","devDependencies":{"@preact/signals-core":"^1.0.1"}}
+{"type":"module","devDependencies":{"@preact/signals-core":"^1.0.1"}}
