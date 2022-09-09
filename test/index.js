@@ -12,6 +12,7 @@ testEffect();
 testBatch();
 testBatchMore();
 nestedBatch();
+readOnly();
 
 function testPrimitive() {
   const str = signal('string');
@@ -115,4 +116,15 @@ function nestedBatch() {
 
   assert(invokes.length === 2);
   assert(invokes[1] === 1);
+}
+
+function readOnly() {
+  const name = signal('Jane');
+  const surname = signal('Doe');
+  const fullName = computed(() => name.value + ' ' + surname.value);
+  try {
+    fullName.value = "";
+    assert(false);
+  }
+  catch (expected) {}
 }

@@ -48,6 +48,9 @@ const computed = value => ({
   toString: valueOf,
   get value() {
     return value();
+  },
+  set value(_) {
+    throw new Error('computed are read-only');
   }
 });
 exports.computed = computed;
