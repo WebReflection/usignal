@@ -6,6 +6,8 @@ const assert = what => {
     throw new Error('unexpected result');
 };
 
+assert((signal(1) + signal(2)) === 3);
+
 testPrimitive();
 testComputed();
 testEffect();
