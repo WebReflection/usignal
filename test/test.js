@@ -18,6 +18,7 @@ export default (name, testValueOf, {signal, computed, effect, batch}) => {
   readOnly();
   testPeek();
   testComputedUniqueness();
+  testComputedMoar();
 
   function testPrimitive() {
     const str = signal('string');
@@ -172,5 +173,31 @@ export default (name, testValueOf, {signal, computed, effect, batch}) => {
     assert(invokes === 2, 'computed value should have been again');
     name.value = 'John';
     assert(invokes === 2, 'computed value should NOT have been again');
+  }
+
+  function testComputedMoar() {
+    let BCalc = 0;
+    let CCalc = 0;
+    const A = signal(0);
+    const B = computed(()=> {
+      BCalc++;
+      return A.value + 1;
+    });
+    const C = computed(() => {
+      CCalc++;
+      return A.value + B.value;
+    });
+
+    console.log('before', {
+      B: [B.value, BCalc],
+      C: [C.value, CCalc]
+    });
+
+    A.value = 1;
+
+    console.log('after', {
+      B: [B.value, BCalc],
+      C: [C.value, CCalc]
+    });
   }
 };
