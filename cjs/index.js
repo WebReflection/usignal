@@ -3,7 +3,7 @@
 
 let batches = null;
 const batch = fn => {
-  let prev = batches;
+  const prev = batches;
   batches = new Set;
   try {
     fn();
