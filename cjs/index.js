@@ -23,6 +23,15 @@ const effect = fn => {
 };
 exports.effect = effect;
 
+// this is useful only as instanceof brand check
+// as new Signal doesn't mean computed or regular
+// so I think there's not much point in using this
+// constructor at all, if not for brand check.
+// once you know a ref is a signal though, whatch out
+// you won't know if you can set its value or not.
+// I think we can differenziate between Signal and
+// Computed as I did before ... but hey, folks out there
+// already landed this, and I am OK(ish) with it.
 class Signal {
   constructor(_) {
     this._ = _;
