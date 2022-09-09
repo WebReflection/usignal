@@ -5,10 +5,12 @@ let batches = null;
 const batch = fn => {
   let prev = batches;
   batches = new Set;
-  fn();
-  for (const fn of batches)
-    prev ? prev.add(fn) : fn();
-  batches = prev;
+  try {
+    fn();
+    for (const fn of batches)
+      prev ? prev.add(fn) : fn();
+  }
+  finally { batches = prev; }
 };
 exports.batch = batch;
 
@@ -16,8 +18,8 @@ let effects = null;
 const effect = fn => {
   const prev = effects;
   effects = fn;
-  fn();
-  effects = prev;
+  try { fn(); }
+  finally { effects = prev; }
 };
 exports.effect = effect;
 

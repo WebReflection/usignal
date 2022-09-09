@@ -4,18 +4,20 @@ let batches = null;
 export const batch = fn => {
   let prev = batches;
   batches = new Set;
-  fn();
-  for (const fn of batches)
-    prev ? prev.add(fn) : fn();
-  batches = prev;
+  try {
+    fn();
+    for (const fn of batches)
+      prev ? prev.add(fn) : fn();
+  }
+  finally { batches = prev; }
 };
 
 let effects = null;
 export const effect = fn => {
   const prev = effects;
   effects = fn;
-  fn();
-  effects = prev;
+  try { fn(); }
+  finally { effects = prev; }
 };
 
 const signals = new WeakMap;
