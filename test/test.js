@@ -1,4 +1,4 @@
-export default (name, testValueOf, {signal, computed, effect, batch}) => {
+export default (name, testValueOf, {signal, computed, effect, batch, Signal}) => {
 
   const assert = (what, why) => {
     console.assert(what);
@@ -8,6 +8,9 @@ export default (name, testValueOf, {signal, computed, effect, batch}) => {
 
   if (testValueOf)
     assert((signal(1) + signal(2)) === 3, 'valueOf not working');
+
+  assert(signal(0) instanceof Signal, 'signals are not instances of Signal');
+  assert(computed(() => {}) instanceof Signal, 'computeds are not instances of Signal');
 
   testPrimitive();
   testComputed();

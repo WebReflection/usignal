@@ -7,8 +7,11 @@
 An alternative to [@preact/signals-core](https://github.com/preactjs/signals).
 
 ```js
-import {signal, computed, effect, batch} from 'usignal';
-// const {signal, computed, effect, batch} = require('usignal');
+import {signal, computed, effect, batch, Signal} from 'usignal';
+// const {signal, computed, effect, batch, Signal} = require('usignal');
+
+signal(0) instanceof Signal;          // true
+computed(() => {}) instanceof Signal; // true
 
 // try every example shown in
 // https://github.com/preactjs/signals
