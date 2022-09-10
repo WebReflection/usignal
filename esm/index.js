@@ -49,6 +49,8 @@ export class Signal {
    * @param {any} value the Signal value
    */
   constructor(_) { this._ = _ }
+  toString() { return this.value }
+  valueOf() { return this.value }
 }
 
 let computeds;
@@ -72,8 +74,6 @@ class Computed extends Signal {
   set value(_) {
     throw new Error('computed are read-only');
   }
-  toString() { return this.value }
-  valueOf() { return this.value }
 }
 
 /**
@@ -106,8 +106,6 @@ class Reactive extends Signal {
     }
   }
   peek() { return this._ }
-  toString() { return this._ }
-  valueOf() { return this._ }
 }
 
 /**

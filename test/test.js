@@ -22,6 +22,7 @@ export default (name, testValueOf, {signal, computed, effect, batch, Signal}) =>
   testPeek();
   testComputedUniqueness();
   testComputedMoar();
+  implicitToString();
   // nestedEffects();
 
   function testPrimitive() {
@@ -209,6 +210,19 @@ export default (name, testValueOf, {signal, computed, effect, batch, Signal}) =>
       }) === '{"B":[2,2],"C":[3,2]}',
       'unexpected amount of invokes after single change'
     );
+  }
+
+  function implicitToString() {
+    let invokes = 0;
+    const number = signal(1);
+    const sum = computed(() => {
+      invokes++;
+      return `${number} + 2 = 3`;
+    });
+    assert(sum.value === '1 + 2 = 3', 'computed with toString() did not return the expected value');
+    number.value = 0;
+    assert(sum.value === '0 + 2 = 3', 'computed with toString() after value did not return the expected value');
+    assert(invokes === 2, 'computed with toString() did not get invoked');
   }
 
   // check different output in preact/usignal
