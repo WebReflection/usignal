@@ -19,6 +19,7 @@ export default (name, testValueOf, {signal, computed, effect, batch}) => {
   testPeek();
   testComputedUniqueness();
   testComputedMoar();
+  // nestedEffects();
 
   function testPrimitive() {
     const str = signal('string');
@@ -205,5 +206,27 @@ export default (name, testValueOf, {signal, computed, effect, batch}) => {
       }) === '{"B":[2,2],"C":[3,2]}',
       'unexpected amount of invokes after single change'
     );
+  }
+
+  // check different output in preact/usignal
+  // even if the logic / result is eaxctly the same
+  function nestedEffects() {
+    const counter = signal(1);
+    const double = computed(() => {
+      console.log('double');
+      return counter.value * 2
+    });
+    const tripple = computed(() => {
+      console.log('triple');
+      return counter.value * 3;
+    });
+
+    effect(() => {
+      console.log(double.value);
+      effect(() => {
+        console.log(tripple.value);
+      });
+    });
+    counter.value = 20;
   }
 };
