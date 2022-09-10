@@ -1,4 +1,4 @@
 import test from './test.js';
 import * as usignal from '../esm/index.js';
 
-test('usignal', true, usignal);
+test('usignal', usignal);

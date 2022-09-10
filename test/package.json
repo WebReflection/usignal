@@ -1,1 +1,7 @@
-{"type":"module","devDependencies":{"@preact/signals-core":"^1.0.1"}}
+{
+  "type": "module",
+  "devDependencies": {
+    "@preact/signals-core": "^1.0.1",
+    "solid-js": "^1.5.4"
+  }
+}

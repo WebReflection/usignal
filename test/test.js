@@ -1,4 +1,4 @@
-export default (name, testValueOf, {signal, computed, effect, batch, Signal}) => {
+export default (name, {signal, computed, effect, batch, Signal}) => {
 
   const assert = (what, why) => {
     console.assert(what);
@@ -6,11 +6,13 @@ export default (name, testValueOf, {signal, computed, effect, batch, Signal}) =>
       throw new Error(`\x1b[1m${name}\x1b[0m: ${why}`);
   };
 
-  if (testValueOf)
+  if (name === 'usignal')
     assert((signal(1) + signal(2)) === 3, 'valueOf not working');
 
   assert(signal(0) instanceof Signal, 'signals are not instances of Signal');
-  assert(computed(() => {}) instanceof Signal, 'computeds are not instances of Signal');
+
+  if (/^(?:usignal|@preact\/signals-core)$/.test(name))
+    assert(computed(() => {}) instanceof Signal, 'computeds are not instances of Signal');
 
   testPrimitive();
   testComputed();
@@ -22,8 +24,11 @@ export default (name, testValueOf, {signal, computed, effect, batch, Signal}) =>
   testPeek();
   testComputedUniqueness();
   testComputedMoar();
-  implicitToString();
-  // nestedEffects();
+
+  if (/^(?:usignal|@preact\/signals-core)$/.test(name))
+    implicitToString();
+
+  nestedEffects();
 
   function testPrimitive() {
     const str = signal('string');
@@ -225,8 +230,8 @@ export default (name, testValueOf, {signal, computed, effect, batch, Signal}) =>
     assert(invokes === 2, 'computed with toString() did not get invoked');
   }
 
-  // check different output in preact/usignal
-  // even if the logic / result is eaxctly the same
+  // check different output in preact/usignal/solid
+  // even if the logic / result is almost same output
   function nestedEffects() {
     const counter = signal(1);
     const double = computed(() => {
