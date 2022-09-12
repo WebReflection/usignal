@@ -1,5 +1,7 @@
 /*! (c) Andrea Giammarchi */
 
+const {is} = Object;
+
 let batches;
 
 /**
@@ -14,65 +16,78 @@ export const batch = fn => {
   try {
     fn();
     for (const fn of batches)
-      prev ? prev.add(fn) : fn();
+      prev ? prev.add(fn) : fn(false);
   }
   finally { batches = prev }
 };
 
-let effects;
-
-/**
- * Expose and invoke a callback as side-effect target to signal changes.
- * @param {function} callback the callback to make signals reactive
- */
-export const effect = fn => {
-  const prev = effects;
-  effects = fn;
-  try { fn() }
-  finally { effects = prev }
-};
-
-// this is useful only as instanceof brand check
-// as new Signal doesn't mean computed or regular
-// so I think there's not much point in using this
-// constructor at all, if not for brand check.
-// once you know a ref is a signal though, whatch out
-// you won't know if you can set its value or not.
-// I think we can differenziate between Signal and
-// Computed as I did before ... but hey, folks out there
-// already landed this, and I am OK(ish) with it.
-
 export class Signal {
-  /**
-   * A specialized class that represents both normal and computed signals.
-   * **Do not use this class if not for brand-checking signals around**.
-   * @param {any} value the Signal value
-   */
   constructor(_) { this._ = _ }
   toString() { return this.value }
   valueOf() { return this.value }
 }
 
+const update = ({o:{$}}) => {
+  for (const effect of $) {
+    effect.$ = true;
+    update(effect);
+  }
+};
+
+let effects;
+const compute = ({c}) => {
+  if (c.size) {
+    const prev = effects;
+    effects = prev || new Set;
+    for (const ref of c) {
+      const computed = ref.deref();
+      if (computed) {
+        computed.$ = true;
+        if (computed instanceof Effect) {
+          effects.add(computed);
+          update(computed);
+        }
+        else
+          compute(computed.s);
+      }
+      /* c8 ignore start */
+      else c.delete(ref);
+      /* c8 ignore end */
+    }
+    try {
+      if (!prev) {
+        for (const effect of effects)
+          batches ? batches.add(() => { effect.value }) : effect.value;
+      }
+    }
+    finally { effects = prev }
+  }
+};
+
 let computeds;
 class Computed extends Signal {
   constructor(_) {
     super(_);
-    this.c = void 0;  // computeds
-    this.v = void 0;  // value
+    this.$ = false;
+    this.s = void 0;
   }
   get value() {
-    if (!this.c) {
-      (this.c = () => {
-        const prev = computeds;
-        computeds = this.c;
-        try { this.v = this._() }
-        finally { computeds = prev }
-      })();
+    if (!this.s) {
+      const prev = computeds;
+      computeds = new Set;
+      try {
+        this.s = new Reactive(this._());
+        const wr = new WeakRef(this);
+        for (const signal of computeds)
+          signal.c.add(wr);
+      }
+      finally { computeds = prev }
     }
-    return this.v;
-  }
-  set value(_) {
-    throw new Error('computed are read-only');
+    if (this.$) {
+      try { this.s.value = this._() }
+      finally { this.$ = false }
+    }
+    return this.s.value;
   }
 }
 
@@ -82,30 +97,49 @@ class Computed extends Signal {
  * @param {function} callback a function that can computes and return any value
  * @returns {Signal}
  */
-export const computed = value => new Computed(value);
+export const computed = callback => new Computed(callback);
+
+let outer;
+class Effect extends Computed {
+  constructor(_) {
+    super(_).o = {i: 0, $: []};
+  }
+  get value() {
+    const prev = outer;
+    outer = this.o;
+    outer.i = 0;
+    super.value;
+    outer = prev;
+  }
+}
+
+export const effect = callback => {
+  if (outer) {
+    const {i, $} = outer;
+    const unique = $[i] || ($[i] = new Effect(callback));
+    outer.i++;
+    unique.value;
+  }
+  else
+    new Effect(callback).value;
+};
 
 class Reactive extends Signal {
   constructor(_) {
-    super(_);
-    this.c = new Set; // computeds
-    this.e = new Set; // effects
+    super(_).c = new Set;
   }
+  peek() { return this._ }
   get value() {
     if (computeds)
-      this.c.add(computeds);
-    if (effects)
-      this.e.add(effects);
+      computeds.add(this);
     return this._;
   }
   set value(_) {
-    if (this._ !== _) {
+    if (!is(_, this._)) {
       this._ = _;
-      for (const fn of this.c) fn();
-      for (const fn of this.e)
-        batches ? batches.add(fn) : fn();
+      compute(this);
     }
   }
-  peek() { return this._ }
 }
 
 /**

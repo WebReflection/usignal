@@ -1,17 +1,17 @@
-export default (name, {signal, computed, effect, batch, Signal}) => {
+export default (library, {signal, computed, effect, batch, Signal}) => {
 
   const assert = (what, why) => {
     console.assert(what);
     if (!what)
-      throw new Error(`\x1b[1m${name}\x1b[0m: ${why}`);
+      throw new Error(`\x1b[1m${library}\x1b[0m: ${why}`);
   };
 
-  if (name === 'usignal')
+  if (library === 'usignal')
     assert((signal(1) + signal(2)) === 3, 'valueOf not working');
 
   assert(signal(0) instanceof Signal, 'signals are not instances of Signal');
 
-  if (/^(?:usignal|@preact\/signals-core)$/.test(name))
+  if (/^(?:usignal|@preact\/signals-core)$/.test(library))
     assert(computed(() => {}) instanceof Signal, 'computeds are not instances of Signal');
 
   testPrimitive();
@@ -25,10 +25,12 @@ export default (name, {signal, computed, effect, batch, Signal}) => {
   testComputedUniqueness();
   testComputedMoar();
 
-  if (/^(?:usignal|@preact\/signals-core)$/.test(name))
+  if (/^(?:usignal|@preact\/signals-core)$/.test(library))
     implicitToString();
 
+  testDiamond();
   nestedEffects();
+  nestedIndependentEffects();
 
   function testPrimitive() {
     const str = signal('string');
@@ -180,9 +182,11 @@ export default (name, {signal, computed, effect, batch, Signal}) => {
     assert(fullName.value === 'Jane Doe', 'computed not working');
     assert(invokes === 1, 'computed value should have been invoked once');
     name.value = 'John';
-    assert(invokes === 2, 'computed value should have been again');
+    if (/^(?:usignal)$/.test(library)) fullName.value;
+    assert(invokes === 2, 'computed value should have been invoked again');
     name.value = 'John';
-    assert(invokes === 2, 'computed value should NOT have been again');
+    if (/^(?:usignal)$/.test(library)) fullName.value;
+    assert(invokes === 2, 'computed value should NOT have been invoked again');
   }
 
   function testComputedMoar() {
@@ -230,9 +234,40 @@ export default (name, {signal, computed, effect, batch, Signal}) => {
     assert(invokes === 2, 'computed with toString() did not get invoked');
   }
 
+  function testDiamond() {
+    let BCalc = 0;
+    let CCalc = 0;
+    let DCalc = 0;
+    const a = signal(1);
+    const b = computed(() => {
+      BCalc++;
+      return a.value;
+    });
+    const c = computed(() => {
+      CCalc++;
+      return a.value;
+    });
+    const d = computed(() => {
+      DCalc++;
+      return b.value + c.value;
+    });
+
+    assert(d.value === 2, 'initial d value is wrong');
+    assert([BCalc, CCalc, DCalc].join(',') === '1,1,1', 'initial calculation is wrong');
+    a.value = 2;
+    assert(d.value === 4, 'second d value is wrong');
+    assert([BCalc, CCalc, DCalc].join(',') === '2,2,2', 'second calculation is wrong: ');
+    a.value = 3;
+    assert(d.value === 6, 'third d value is wrong');
+    assert([BCalc, CCalc, DCalc].join(',') === '3,3,3', 'third calculation is wrong');
+  }
+
   // check different output in preact/usignal/solid
   // even if the logic / result is almost same output
   function nestedEffects() {
+    console.log('');
+    console.log('------');
+
     const counter = signal(1);
     const double = computed(() => {
       console.log('double');
@@ -244,11 +279,45 @@ export default (name, {signal, computed, effect, batch, Signal}) => {
     });
 
     effect(() => {
-      console.log(double.value);
+      console.log('outer', double.value);
       effect(() => {
-        console.log(tripple.value);
+        console.log('nested', tripple.value);
       });
     });
+
+    effect(() => {
+      console.log('a part', tripple.value);
+    });
+
+    console.log('- - -');
     counter.value = 20;
+    console.log('------');
+  }
+
+  function nestedIndependentEffects() {
+    console.log('');
+    console.log('------');
+
+    const a = signal(1);
+    const b = signal(1);
+
+    effect(() => {
+      console.log('outer', a.value);
+      effect(() => {
+        console.log('nested', b.value);
+      });
+    });
+
+    effect(() => {
+      console.log('a part', a.value);
+    });
+
+    console.log('- - -');
+    a.value = 2;
+    console.log('- - -');
+    b.value = 3;
+    console.log('- - -');
+    a.value = 3;
+    console.log('------');
   }
 };
