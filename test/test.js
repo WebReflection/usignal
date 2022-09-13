@@ -1,5 +1,8 @@
 export default (library, {signal, computed, effect, batch, Signal}) => {
 
+  console.log('');
+  console.log(`\x1b[1m${library}\x1b[0m`);
+
   const assert = (what, why) => {
     console.assert(what);
     if (!what)
@@ -265,7 +268,6 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
   // check different output in preact/usignal/solid
   // even if the logic / result is almost same output
   function nestedEffects() {
-    console.log('');
     console.log('------');
 
     const counter = signal(1);
@@ -292,10 +294,10 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
     console.log('- - -');
     counter.value = 20;
     console.log('------');
+    console.log('');
   }
 
   function nestedIndependentEffects() {
-    console.log('');
     console.log('------');
 
     const a = signal(1);
@@ -319,5 +321,6 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
     console.log('- - -');
     a.value = 3;
     console.log('------');
+    console.log('');
   }
 };
