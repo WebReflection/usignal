@@ -10,13 +10,12 @@ let batches;
  * @param {function} callback a function that batches changes to be notified
  *  through signals.
  */
-export const batch = fn => {
+export const batch = callback => {
   const prev = batches;
-  batches = new Set;
+  batches = prev || new Set;
   try {
-    fn();
-    for (const fn of batches)
-      prev ? prev.add(fn) : fn(false);
+    callback();
+    if (!prev) for (const fn of batches) fn();
   }
   finally { batches = prev }
 };
