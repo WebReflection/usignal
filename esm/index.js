@@ -94,7 +94,7 @@ class Computed extends Signal {
  * Returns a read-only Signal that is invoked only when any of the internally
  * used signals, as in within the callback, is unknown or updated.
  * @param {function} callback a function that can computes and return any value
- * @returns {Signal}
+ * @returns {Computed}
  */
 export const computed = callback => new Computed(callback);
 
@@ -112,6 +112,10 @@ class Effect extends Computed {
   }
 }
 
+/**
+ * Invokes a function when any of its internal signals or computed values change.
+ * @param {function} callback the function to re-invoke on changes.
+ */
 export const effect = callback => {
   if (outer) {
     const {i, $} = outer;
@@ -144,6 +148,6 @@ class Reactive extends Signal {
 /**
  * Returns a writable Signal that side-effects whenever its value gets updated.
  * @param {any} value the value the Signal should carry along
- * @returns {Signal}
+ * @returns {Reactive}
  */
 export const signal = value => new Reactive(value);
