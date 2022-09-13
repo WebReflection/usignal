@@ -8,7 +8,7 @@
     "rollup:es": "rollup --config rollup/es.config.js",
     "test": "c8 node test/index.js",
     "size": "cat es.js | brotli | wc -c",
-    "leak": "node --expose-gc ./test/leak.js",
+    "leak": "node --expose-gc ./test/leak.js $@",
     "coverage": "mkdir -p ./coverage; c8 report --reporter=text-lcov > ./coverage/lcov.info"
   },
   "keywords": [
