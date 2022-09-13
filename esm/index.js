@@ -43,13 +43,16 @@ const compute = ({c}) => {
     for (const ref of c) {
       const computed = ref.deref();
       if (computed) {
-        computed.$ = true;
-        if (computed instanceof Effect) {
-          effects.add(computed);
-          update(computed);
+        // it should never be needed to enforce twice
+        if (!computed.$) {
+          computed.$ = true;
+          if (computed instanceof Effect) {
+            effects.add(computed);
+            update(computed);
+          }
+          else
+            compute(computed.s);
         }
-        else
-          compute(computed.s);
       }
       /* c8 ignore start */
       else c.delete(ref);
