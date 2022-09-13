@@ -32,6 +32,21 @@ This library has lazy computed values no matter what, because while refactoring 
 
 If I got this part wrong please let me know through use cases that show a *computed* should always re-calc its value on a single graph *signal* dependency, thank you!
 
+### Also differently ...
+
+One thing I was expecting from libraries that inspired this module is the ability to implicitly have signals values:
+
+```js
+const one = signal(1);
+const two = signal(2);
+const three = computed(() => one + two);
+
+three.value;  // 3 indeed!
+```
+
+It's cool that other libaries use `toString` to simplify common string case integration, mostly with the DOM node, but it should also be welcomed a `valueOf` implementation, like *usignal* has, so that numeric values can actually be used like they are, actually, numbers.
+
+
 ### TODO
 
 - [ ] provide *async* effects to play well with libraries based on signals
