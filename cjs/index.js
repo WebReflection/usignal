@@ -13,7 +13,7 @@ let batches;
  */
 const batch = callback => {
   const prev = batches;
-  batches = prev || new Set;
+  batches = prev || [];
   try {
     callback();
     if (!prev) for (const fn of batches) fn();
@@ -59,7 +59,7 @@ const compute = ({c}) => {
     try {
       if (!prev) {
         for (const effect of effects)
-          batches ? batches.add(() => { effect.value }) : effect.value;
+          batches ? batches.push(() => { effect.value }) : effect.value;
       }
     }
     finally { effects = prev }
