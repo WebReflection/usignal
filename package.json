@@ -3,7 +3,7 @@
   "version": "0.3.3",
   "main": "./cjs/index.js",
   "scripts": {
-    "build": "npm run cjs && npm run rollup:es && npm run test && npm run leak && npm run size",
+    "build": "npm run cjs && npm run rollup:es && npm run leak && npm run test && npm run size",
     "cjs": "ascjs esm cjs",
     "rollup:es": "rollup --config rollup/es.config.js",
     "test": "c8 node test/index.js",
@@ -31,6 +31,14 @@
     ".": {
       "import": "./esm/index.js",
       "default": "./cjs/index.js"
+    },
+    "./sync": {
+      "import": "./esm/sync.js",
+      "default": "./cjs/sync.js"
+    },
+    "./async": {
+      "import": "./esm/async.js",
+      "default": "./cjs/async.js"
     },
     "./package.json": "./package.json"
   },

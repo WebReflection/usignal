@@ -15,7 +15,9 @@ export const batch = callback => {
   batches = prev || [];
   try {
     callback();
-    if (!prev) for (const fn of batches) fn();
+    if (!prev)
+      for (const callback of batches)
+        callback();
   }
   finally { batches = prev }
 };
@@ -26,8 +28,8 @@ export class Signal {
   valueOf() { return this.value }
 }
 
-const update = ({o:{$}}) => {
-  for (const effect of $) {
+const update = ({e}) => {
+  for (const effect of e) {
     effect.$ = true;
     update(effect);
   }
@@ -51,7 +53,7 @@ const compute = ({c}) => {
       }
       /* c8 ignore start */
       else c.delete(ref);
-      /* c8 ignore end */
+      /* c8 ignore stop */
     }
     try {
       if (!prev) {
@@ -67,8 +69,8 @@ let computeds;
 class Computed extends Signal {
   constructor(_) {
     super(_);
-    this.$ = false;
-    this.s = void 0;
+    this.$ = false;   // $ should update
+    this.s = void 0;  // signal
   }
   get value() {
     if (!this.s) {
@@ -100,13 +102,29 @@ export const computed = callback => new Computed(callback);
 
 let outer;
 class Effect extends Computed {
-  constructor(_) {
-    super(_).o = {i: 0, $: []};
+  constructor(_, a) {
+    super(_);
+    this.i = 0;   // index
+    this.a = a;   // async
+    this.m = !a;  // microtask
+    this.e = [];  // effects
+                  // I am effects ^_^;;
   }
   get value() {
+    this.a ? this.async() : this.sync();
+  }
+  async() {
+    if (!this.m) {
+      this.m = true;
+      queueMicrotask(() => {
+        this.m = false;
+        this.sync();
+      });
+    }
+  }
+  sync() {
     const prev = outer;
-    outer = this.o;
-    outer.i = 0;
+    (outer = this).i = 0;
     super.value;
     outer = prev;
   }
@@ -115,21 +133,22 @@ class Effect extends Computed {
 /**
  * Invokes a function when any of its internal signals or computed values change.
  * @param {function} callback the function to re-invoke on changes.
+ * @param {boolean} [aSync=false] specify an asynchronous effect instead
  */
-export const effect = callback => {
+export const effect = (callback, aSync = false) => {
   if (outer) {
-    const {i, $} = outer;
-    const unique = $[i] || ($[i] = new Effect(callback));
+    const {i, e} = outer;
+    const unique = e[i] || (e[i] = new Effect(callback, aSync));
     outer.i++;
     unique.value;
   }
   else
-    new Effect(callback).value;
+    new Effect(callback, aSync).value;
 };
 
 class Reactive extends Signal {
   constructor(_) {
-    super(_).c = new Set;
+    super(_).c = new Set; // computeds
   }
   peek() { return this._ }
   get value() {

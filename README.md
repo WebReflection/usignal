@@ -9,9 +9,16 @@ An alternative to [@preact/signals-core](https://github.com/preactjs/signals).
 ```js
 import {signal, computed, effect, batch, Signal} from 'usignal';
 // const {signal, computed, effect, batch, Signal} = require('usignal');
+// usignal/sync and usignal/async ar ealso valid exports
+// each version exports an enforced, always a/sync effect function
 
 signal(0) instanceof Signal;          // true
 computed(() => {}) instanceof Signal; // true
+
+effect(
+  () => { console.log('fx') },
+  true  // optionally make the effect async: false by default
+);
 
 // try every example shown in
 // https://github.com/preactjs/signals
@@ -49,6 +56,6 @@ It's cool that other libaries use `toString` to simplify common string case inte
 
 ### TODO
 
-- [ ] provide *async* effects to play well with libraries based on signals
+- [x] provide *async* effects to play well with libraries based on signals - v0.4.0
 - [ ] find out some good benchmark to test against *preact/signals-core* and *solid-js* to see if there's room for some improvement
 
