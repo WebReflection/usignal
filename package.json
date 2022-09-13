@@ -3,11 +3,12 @@
   "version": "0.3.2",
   "main": "./cjs/index.js",
   "scripts": {
-    "build": "npm run cjs && npm run rollup:es && npm run test && npm run size",
+    "build": "npm run cjs && npm run rollup:es && npm run test && npm run leak && npm run size",
     "cjs": "ascjs esm cjs",
     "rollup:es": "rollup --config rollup/es.config.js",
     "test": "c8 node test/index.js",
     "size": "cat es.js | brotli | wc -c",
+    "leak": "node --expose-gc ./test/leak.js",
     "coverage": "mkdir -p ./coverage; c8 report --reporter=text-lcov > ./coverage/lcov.info"
   },
   "keywords": [
