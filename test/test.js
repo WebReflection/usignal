@@ -9,8 +9,10 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
       throw new Error(`\x1b[1m${library}\x1b[0m: ${why}`);
   };
 
-  if (library === 'usignal')
+  if (library === 'usignal') {
     assert((signal(1) + signal(2)) === 3, 'valueOf not working');
+    assert(JSON.stringify(signal(1)) === '1', 'toJSON not working');
+  }
 
   assert(signal(0) instanceof Signal, 'signals are not instances of Signal');
 

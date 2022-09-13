@@ -26,6 +26,7 @@ export class Signal {
   constructor(_) { this._ = _ }
   toString() { return this.value }
   valueOf() { return this.value }
+  toJSON() { return this.value }
 }
 
 const update = ({e}) => {
