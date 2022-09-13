@@ -28,7 +28,9 @@ This library has lazy computed values no matter what, because while refactoring 
   * in short, all *computed* values here are *lazy*, meaning they re-calculate their result *only* when their *value* is accessed, not as side-effect
   * whenever a *signal* update should *effect* to the logic, feel free to use *computed* callbacks inside such *effect* so that everything works transparently as meant, but only the involved computed will be re-calculated in that *effect*, as opposite of all of them without being needed or used right away
   * using *effects* when effects are meant, felt better than having all *computed* somehow "*effecting*" the whole execution
-  * if I got this part wrong please let me know through use cases that show a *computed* should always re-calc its value on a single graph *signal* dependency, thank you!
+  * as a matter of fact, *effects* are *computed* (literally `Effect extends Computed`) with an *invoke ASAP* logic instead of the lazy one
+
+If I got this part wrong please let me know through use cases that show a *computed* should always re-calc its value on a single graph *signal* dependency, thank you!
 
 ### TODO
 
