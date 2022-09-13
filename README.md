@@ -51,7 +51,7 @@ const three = computed(() => one + two);
 three.value;  // 3 indeed!
 ```
 
-It's cool that other libaries use `toString` to simplify common string case integration, mostly with the DOM node, but it should also be welcomed a `valueOf` implementation, like *usignal* has, so that numeric values can actually be used like they are, actually, numbers.
+It's cool that other libaries use `toString` to simplify common string case integration, mostly with the DOM node, but it should also be welcomed a `valueOf` implementation, like *usignal* has, so that numeric values can actually be used as if they are, actually, numbers.
 
 
 ### TODO
