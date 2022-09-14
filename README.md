@@ -9,8 +9,6 @@ An alternative to [@preact/signals-core](https://github.com/preactjs/signals).
 ```js
 import {signal, computed, effect, batch, Signal} from 'usignal';
 // const {signal, computed, effect, batch, Signal} = require('usignal');
-// usignal/sync and usignal/async ar ealso valid exports
-// each version exports an enforced, always a/sync effect function
 
 signal(0) instanceof Signal;          // true
 computed(() => {}) instanceof Signal; // true
@@ -24,6 +22,30 @@ effect(
 // https://github.com/preactjs/signals
 // or see test/index.js file to see it in action
 ```
+
+#### Exports
+
+This is a *dual module* so it works in either *CommonJS* or *ECMAScript* module systems.
+
+  * `usignal/sync` exports with an enforced *sync* effect
+  * `usignal/async` exports with an enforced *async* effect
+  * `usignal` in *browsers* exports `usignal/async` and `usignal/sync` in *servers* or by *default*
+
+Current exports are exactly these:
+
+```js
+import {
+  signal,
+  computed,
+  effect,
+  batch,
+  Signal
+} form 'usignal';
+```
+
+The `Signal` export is useful only as brand check for either *computed* or *signal* references, but it cannot be used as constructor right away.
+
+---
 
 ## Differently thought ...
 
@@ -55,6 +77,7 @@ It's cool that other libaries use `toString` to simplify common string case inte
 
 Addictionally, *usignal* has also a `toJSON` helper to serialize out of the box their value.
 
+---
 
 ### TODO
 
