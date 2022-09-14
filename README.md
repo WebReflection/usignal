@@ -53,6 +53,8 @@ three.value;  // 3 indeed!
 
 It's cool that other libaries use `toString` to simplify common string case integration, mostly with the DOM node, but it should also be welcomed a `valueOf` implementation, like *usignal* has, so that numeric values can actually be used as if they are, actually, numbers.
 
+Addictionally, *usignal* has also a `toJSON` helper to serialize out of the box their value.
+
 
 ### TODO
 
