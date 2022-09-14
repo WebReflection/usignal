@@ -30,6 +30,7 @@ This is a *dual module* so it works in either *CommonJS* or *ECMAScript* module 
   * `usignal/sync` exports with an enforced *sync* effect
   * `usignal/async` exports with an enforced *async* effect
   * `usignal` in *browsers* exports `usignal/async` and `usignal/sync` in *servers* or by *default*
+  * the [unpkg/usignal](https://unpkg.com/usignal) default export points at the pre minified [es.js](./es.js) file without any enforcement around *effect* so that alleffects are *sync* by default but can be *async* passing `true` as second parameter
 
 Current exports are exactly these:
 
