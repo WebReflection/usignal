@@ -72,6 +72,7 @@ const compute = ({c}) => {
         }
       }
       /* c8 ignore start */
+      // this is tested through the npm run leak
       else c.delete(ref);
       /* c8 ignore stop */
     }
