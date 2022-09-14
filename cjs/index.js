@@ -87,7 +87,7 @@ let computeds;
 class Computed extends Signal {
   constructor(_) {
     super(_);
-    this.$ = false;   // $ should update
+    this.$ = false;   // $ should update ("value for money")
     this.s = void 0;  // signal
   }
   /** @readonly */
@@ -129,7 +129,7 @@ let outer;
 const noop = () => {};
 const stop = e => {
   for (const effect of e)
-      effect.stop();
+    effect.stop();
 };
 class Effect extends Computed {
   constructor(_, a) {
@@ -138,7 +138,7 @@ class Effect extends Computed {
     this.a = a;   // async
     this.m = a;   // microtask
     this.e = [];  // effects
-                  // I am effects ^_^;;
+                  // "I am effects" ^_^;;
   }
   get value() {
     this.a ? this.async() : this.sync();
@@ -190,7 +190,7 @@ const effect = (callback, aSync = false) => {
     // there's literally no way to optimize this path *unless* the callback is
     // already a known one. however, latter case is not really common code so
     // the question is: should I optimize this more than this? 'cause I don't
-    // think the amount of code needed to understand if a cllback is *likely*
+    // think the amount of code needed to understand if a callback is *likely*
     // the same as before makes any sense + correctness would be trashed.
     if (i === e.length || e[i]._ !== callback)
       e[i] = new Effect(callback, aSync);

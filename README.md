@@ -93,7 +93,7 @@ This module is 100% code covered, including the *WeakRef* which is tested throug
 
 To use other libraries as reference, I have also added *preact/signals-core* and *solid-js* dev-dependencies within the test folder.
 
-The following instruction are needed to test other libraries too:
+The following instructions are needed to test other libraries too:
 
 ```sh
 cd usignal
