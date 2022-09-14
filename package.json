@@ -4,10 +4,10 @@
   "main": "./cjs/index.js",
   "types": "./types/index.d.ts",
   "scripts": {
-    "build": "npm run cjs && npm run rollup:es && npm run leak && npm run test && npm run size",
+    "build": "npm run cjs && npm run rollup:es && npm run test && npm run size",
     "cjs": "ascjs esm cjs",
     "rollup:es": "rollup --config rollup/es.config.js",
-    "test": "c8 node test/index.js $@",
+    "test": "c8 node --expose-gc test/index.js $@",
     "size": "cat es.js | brotli | wc -c",
     "leak": "node --expose-gc ./test/leak.js $@",
     "types": "tsc -p .",
@@ -22,7 +22,7 @@
   "author": "Andrea Gimmarchi",
   "license": "ISC",
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^14.0.1",
+    "@rollup/plugin-node-resolve": "^14.1.0",
     "ascjs": "^5.0.1",
     "c8": "^7.12.0",
     "rollup": "^2.79.0",

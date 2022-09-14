@@ -13,7 +13,6 @@ const {signal, computed} = await import(
     '../esm/index.js'
 );
 
-
 const signals = [];
 
 for (let i = 65; i <= 90; i++)

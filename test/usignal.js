@@ -1,6 +1,10 @@
-import test from './test.js';
-import aSync from './async.js';
+import './leak.js';
 import * as usignal from '../esm/index.js';
 
-test('usignal', usignal);
-aSync('usignal', usignal);
+setTimeout(
+  async () => {
+    (await import('./test.js')).default('usignal', usignal);
+    (await import('./async.js')).default('usignal', usignal);
+  },
+  250
+);
