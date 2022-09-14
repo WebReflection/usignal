@@ -41,7 +41,7 @@ import {
   effect,
   batch,
   Signal
-} form 'usignal';
+} from 'usignal';
 ```
 
 The `Signal` export is useful only as brand check for either *computed* or *signal* references, but it cannot be used as constructor right away.
