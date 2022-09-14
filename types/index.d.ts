@@ -8,6 +8,8 @@ export class Signal {
     /** @private */
     private _;
     /** @returns {T} */
+    toJSON(): T;
+    /** @returns {T} */
     toString(): T;
     /** @returns {T} */
     valueOf(): T;
@@ -15,7 +17,7 @@ export class Signal {
 export function computed(callback: () => T): {
     value: readonly T;
 };
-export function effect(callback: () => void, aSync?: boolean): void;
+export function effect(callback: () => void, aSync?: boolean): Function;
 export function signal(value: T): {
     value: T;
 };

@@ -4,7 +4,7 @@
   "main": "./cjs/index.js",
   "types": "./types/index.d.ts",
   "scripts": {
-    "build": "npm run cjs && npm run rollup:es && npm run test && npm run size",
+    "build": "npm run cjs && npm run rollup:es && npm run test && npm run types && npm run size",
     "cjs": "ascjs esm cjs",
     "rollup:es": "rollup --config rollup/es.config.js",
     "test": "c8 node --expose-gc test/index.js $@",
