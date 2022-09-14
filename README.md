@@ -4,7 +4,7 @@
 
 <sup>**Social Media Photo by [Carlos Alberto Gómez Iñiguez](https://unsplash.com/@iniguez) on [Unsplash](https://unsplash.com/)**</sup>
 
-An alternative to [@preact/signals-core](https://github.com/preactjs/signals), 615 bytes minified with brotli.
+An alternative to [@preact/signals-core](https://github.com/preactjs/signals), 658 bytes minified with brotli.
 
 ```js
 import {signal, computed, effect, batch, Signal} from 'usignal';
