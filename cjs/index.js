@@ -97,13 +97,18 @@ class Computed extends Signal {
       computeds = new Set;
       try {
         this.s = new Reactive(this._());
+        // why WeakRef? well, a computed/effect can depend on signals but
+        // rarely vice-versa (if ever). When a computed/effect is gone the
+        // signal should be able to drop it too to avoid memory leaks.
+        // The dropping ref part though happens on signal change only but
+        // if a singal is GC collected, all its computed/effects can go too.
         const wr = new WeakRef(this);
         for (const signal of computeds)
           signal.c.add(wr);
       }
       finally { computeds = prev }
     }
-    if (this.$) {
+    else if (this.$) {
       try { this.s.value = this._() }
       finally { this.$ = false }
     }
@@ -122,6 +127,10 @@ exports.computed = computed;
 
 let outer;
 const noop = () => {};
+const stop = e => {
+  for (const effect of e)
+      effect.stop();
+};
 class Effect extends Computed {
   constructor(_, a) {
     super(_);
@@ -145,14 +154,25 @@ class Effect extends Computed {
   }
   sync() {
     const prev = outer;
+    const {e} = this;
     (outer = this).i = 0;
+    const {length} = e;
     super.value;
+    // if effects are present in loops, these can grow or shrink.
+    // when these grow, there's nothing to do, as well as when these are
+    // still part of the loop, as the callback gets updated anyway.
+    // however, if there were more effects before but none now, those can
+    // just stop being referenced and go with the GC.
+    if (outer.i < length)
+      stop(e.splice(outer.i));
+    for (const effect of e)
+      effect.value;
     outer = prev;
   }
   stop() {
     this._ = this.sync = this.async = noop;
-    for (const e of this.e.splice(0))
-      e.stop();
+    if (this.e.length)
+      stop(this.e.splice(0));
   }
 }
 
@@ -166,13 +186,19 @@ const effect = (callback, aSync = false) => {
   let unique;
   if (outer) {
     const {i, e} = outer;
-    unique = e[i] || (e[i] = new Effect(callback, aSync));
+    // bottleneck #2 (first being new WeakRef and deref() dance possibly slow)
+    // there's literally no way to optimize this path *unless* the callback is
+    // already a known one. however, latter case is not really common code so
+    // the question is: should I optimize this more than this? 'cause I don't
+    // think the amount of code needed to understand if a cllback is *likely*
+    // the same as before makes any sense + correctness would be trashed.
+    if (i === e.length || e[i]._ !== callback)
+      e[i] = new Effect(callback, aSync);
+    unique = e[i];
     outer.i++;
   }
-  else {
-    unique = new Effect(callback, aSync);
-  }
-  unique.value;
+  else
+    (unique = new Effect(callback, aSync)).value;
   return () => { unique.stop() };
 };
 exports.effect = effect;

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>µsignal version</title>
+    <style></style>
+  </head>
+  <body>
+    <script type="module">
+      import * as usignal from '../esm/sync.js';
+
+      const signal = (value) => {
+        const obj = usignal.signal(value);
+        return [
+          () => obj.value,
+          (newValue) => {
+            obj.value = newValue;
+          },
+        ];
+      };
+      const effect = usignal.effect;
+
+      const RED = 0;
+      const GREEN = 1;
+      const BLUE = 2;
+      const colors = ['red', 'green', 'blue'];
+
+      function setup() {
+        const [color, setColor] = signal(RED);
+        const [red, setRed] = signal(false);
+        const [green, setGreen] = signal(false);
+        const [blue, setBlue] = signal(false);
+        let dispose;
+
+        effect(() => {
+          const active = color();
+          console.log(`Activating: ${colors[active]}`);
+          if (dispose) {
+            dispose();
+            dispose = undefined;
+          }
+          switch (active) {
+            case RED:
+              dispose = effect(() =>
+                console.log(`Red is ${red() ? 'on' : 'off'}`)
+              );
+              break;
+
+            case GREEN:
+              dispose = effect(() =>
+                console.log(`Green is ${green() ? 'on' : 'off'}`)
+              );
+              break;
+
+            case BLUE:
+              dispose = effect(() =>
+                console.log(`Blue is ${blue() ? 'on' : 'off'}`)
+              );
+              break;
+          }
+        });
+
+        return ([key, value]) => {
+          switch (key) {
+            case 'color':
+              setColor(value);
+              break;
+
+            case 'red':
+              setRed(value);
+              break;
+
+            case 'green':
+              setGreen(value);
+              break;
+
+            case 'blue':
+              setBlue(value);
+              break;
+          }
+        };
+      }
+
+      const args = [
+        ['red', true],
+        ['green', true],
+        ['blue', true],
+        ['color', GREEN],
+        ['red', false],
+        ['green', false],
+        ['blue', false],
+        ['color', BLUE],
+        ['red', true],
+        ['green', true],
+        ['blue', true],
+        ['color', RED],
+      ];
+
+      let dispose;
+      function run(fn, index) {
+        if (typeof index === 'number' && index < args.length) {
+          fn(args[index]);
+          setTimeout(run, undefined, fn, index + 1);
+          return;
+        }
+
+        if (typeof dispose === 'undefined' && typeof fn === 'function') {
+          dispose = fn;
+          const update = setup();
+          setTimeout(run, undefined, update, 0);
+          return;
+        }
+
+        dispose();
+        dispose = undefined;
+      }
+
+      run(() => {});
+    </script>
+  </body>
+</html>

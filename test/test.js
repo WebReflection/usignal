@@ -34,6 +34,7 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
     implicitToString();
 
   testDiamond();
+  loopedEffects();
   nestedEffects();
   nestedIndependentEffects();
 
@@ -272,6 +273,30 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
     a.value = 3;
     assert(d.value === 6, 'third d value is wrong');
     assert([BCalc, CCalc, DCalc].join(',') === '3,3,3', 'third calculation is wrong');
+  }
+
+  function loopedEffects() {
+    const invokes = [];
+    const num = signal(0);
+    let loop = 2;
+
+    effect(() => {
+      invokes.push(num.value);
+      for (let i = 0; i < loop; i++)
+        effect(() => {
+          invokes.push(num.value + i);
+        });
+    });
+
+    assert(invokes.length === 3, 'looped effects not working');
+    assert(invokes.join(',') === '0,0,1', 'looped values not matching');
+  
+    invokes.splice(0);
+    loop = 1;
+    num.value = 1;
+
+    assert(invokes.length === 2, 'looped effects not working after changes');
+    assert(invokes.join(',') === '1,1', 'looped values not matching after changes');
   }
 
   // check different output in preact/usignal/solid
