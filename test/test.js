@@ -62,7 +62,7 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
     const surname = signal('Doe');
     const fullName = computed(() => name.value + ' ' + surname.value);
 
-    effect(() => {
+    const dispose = effect(() => {
       invokes.push(fullName.value);
     });
 
@@ -81,6 +81,13 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
     surname.value = 'Deo';
     assert(invokes.length === 4, 'non batched not working');
     assert(invokes.join('\n') === 'Jane Doe\nJohn Doe\nJane Doe\nJane Deo', 'unexpected non batched');
+
+    if (dispose) {
+      dispose();
+      name.value = 'What';
+      surname.value = 'Ever';
+      assert(invokes.length === 4, 'dispose is not working');
+    }
   }
 
   function testBatch() {
@@ -282,14 +289,14 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
       return counter.value * 3;
     });
 
-    effect(() => {
+    const dispose1 = effect(() => {
       console.log('outer', double.value);
       effect(() => {
         console.log('nested', tripple.value);
       });
     });
 
-    effect(() => {
+    const dispose2 = effect(() => {
       console.log('a part', tripple.value);
     });
 
@@ -297,6 +304,12 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
     counter.value = 20;
     console.log('------');
     console.log('');
+
+    if (dispose1 && dispose2) {
+      dispose1();
+      dispose2();
+      counter.value = 40;
+    }
   }
 
   function nestedIndependentEffects() {

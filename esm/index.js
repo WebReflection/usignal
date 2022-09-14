@@ -120,6 +120,7 @@ class Computed extends Signal {
 export const computed = callback => new Computed(callback);
 
 let outer;
+const noop = () => {};
 class Effect extends Computed {
   constructor(_, a) {
     super(_);
@@ -147,22 +148,31 @@ class Effect extends Computed {
     super.value;
     outer = prev;
   }
+  stop() {
+    this._ = this.sync = this.async = noop;
+    for (const e of this.e.splice(0))
+      e.stop();
+  }
 }
 
 /**
  * Invokes a function when any of its internal signals or computed values change.
  * @param {() => void} callback the function to re-invoke on changes.
  * @param {boolean} [aSync=false] specify an asynchronous effect instead
+ * @returns {function} a callback to stop/dispose the effect
  */
 export const effect = (callback, aSync = false) => {
+  let unique;
   if (outer) {
     const {i, e} = outer;
-    const unique = e[i] || (e[i] = new Effect(callback, aSync));
+    unique = e[i] || (e[i] = new Effect(callback, aSync));
     outer.i++;
-    unique.value;
   }
-  else
-    new Effect(callback, aSync).value;
+  else {
+    unique = new Effect(callback, aSync);
+  }
+  unique.value;
+  return () => { unique.stop() };
 };
 
 class Reactive extends Signal {
