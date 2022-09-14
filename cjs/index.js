@@ -8,7 +8,7 @@ let batches;
 /**
  * Execute a callback that will not side-effect until its top-most batch is
  * completed.
- * @param {function} callback a function that batches changes to be notified
+ * @param {() => void} callback a function that batches changes to be notified
  *  through signals.
  */
 const batch = callback => {
@@ -24,9 +24,20 @@ const batch = callback => {
 };
 exports.batch = batch;
 
+/**
+ * A reactive signal with a value property exposed also via toString and valueOf.
+ */
 class Signal {
-  constructor(_) { this._ = _ }
+  /** @param {T} value the value carried along the signal. */
+  constructor(value) {
+    /** @private */
+    this._ = value;
+  }
+
+  /** @returns {T} */
   toString() { return this.value }
+
+  /** @returns {T} */
   valueOf() { return this.value }
 }
 exports.Signal = Signal
@@ -78,6 +89,7 @@ class Computed extends Signal {
     this.$ = false;   // $ should update
     this.s = void 0;  // signal
   }
+  /** @readonly */
   get value() {
     if (!this.s) {
       const prev = computeds;
@@ -101,8 +113,8 @@ class Computed extends Signal {
 /**
  * Returns a read-only Signal that is invoked only when any of the internally
  * used signals, as in within the callback, is unknown or updated.
- * @param {function} callback a function that can computes and return any value
- * @returns {Computed}
+ * @param {() => T} callback a function that can computes and return any value
+ * @returns {{value: readonly T}}
  */
 const computed = callback => new Computed(callback);
 exports.computed = computed;
@@ -113,7 +125,7 @@ class Effect extends Computed {
     super(_);
     this.i = 0;   // index
     this.a = a;   // async
-    this.m = !a;  // microtask
+    this.m = a;   // microtask
     this.e = [];  // effects
                   // I am effects ^_^;;
   }
@@ -121,10 +133,10 @@ class Effect extends Computed {
     this.a ? this.async() : this.sync();
   }
   async() {
-    if (!this.m) {
-      this.m = true;
+    if (this.m) {
+      this.m = false;
       queueMicrotask(() => {
-        this.m = false;
+        this.m = true;
         this.sync();
       });
     }
@@ -139,7 +151,7 @@ class Effect extends Computed {
 
 /**
  * Invokes a function when any of its internal signals or computed values change.
- * @param {function} callback the function to re-invoke on changes.
+ * @param {() => void} callback the function to re-invoke on changes.
  * @param {boolean} [aSync=false] specify an asynchronous effect instead
  */
 const effect = (callback, aSync = false) => {
@@ -174,8 +186,8 @@ class Reactive extends Signal {
 
 /**
  * Returns a writable Signal that side-effects whenever its value gets updated.
- * @param {any} value the value the Signal should carry along
- * @returns {Reactive}
+ * @param {T} value the value the Signal should carry along
+ * @returns {{value: T}}
  */
 const signal = value => new Reactive(value);
 exports.signal = signal;

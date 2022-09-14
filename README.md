@@ -56,6 +56,39 @@ It's cool that other libaries use `toString` to simplify common string case inte
 
 ### TODO
 
-- [x] provide *async* effects to play well with libraries based on signals - v0.4.0
+- [x] provide *async* effects to play well with libraries based on signals - v0.4.x
 - [ ] find out some good benchmark to test against *preact/signals-core* and *solid-js* to see if there's room for some improvement
 
+
+## Tests
+
+This module is 100% code covered, including the *WeakRef* which is tested through the [test/leak.js](./test/leak.js) file, which is part of the *build* script process.
+
+To use other libraries as reference, I have also added *preact/signals-core* and *solid-js* dev-dependencies within the test folder.
+
+The following instruction are needed to test other libraries too:
+
+```sh
+cd usignal
+npm i
+cd test
+npm i
+cd ..
+
+# normal tests
+npm test usignal      # shows also code-coverage
+npm test solid
+npm test preact
+
+# leak test
+npm run leak usignal  # calculate leaks via internals
+npm run leak solid
+npm run leak preact
+```
+
+#### About the leak test
+
+This file is not meant at all as meaningful benchmark against other libraries, it's simply there to allow me to spot regressions on future updates of the library:
+  * there should be zero leaks on signals when a computed reference is garbage collected
+  * the amount of used memory should always be lower than the initial one
+  * the performance should be competitive compared to others

@@ -1,6 +1,11 @@
-import test from './test.js';
-import aSync from './async.js';
-import * as usignal from '../esm/index.js';
+import {argv} from 'node:process';
 
-test('usignal', usignal);
-aSync('usignal', usignal);
+const library = argv.find(arg => /^(?:preact|solid|solid-js)$/.test(arg));
+
+import(
+  library ?
+    (library === 'preact' ?
+      './preact.js' :
+      './solid.js') :
+    './usignal.js'
+);
