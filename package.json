@@ -42,6 +42,10 @@
         "default": "./cjs/index.js"
       }
     },
+    "./core": {
+      "import": "./esm/index.js",
+      "default": "./cjs/index.js"
+    },
     "./sync": {
       "import": "./esm/sync.js",
       "default": "./cjs/sync.js"
