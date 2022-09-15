@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script type="module">
+  import { signal, computed, effect } from '../esm/index.js';
+
+  const count = signal(0);
+
+  // When count changes, update the display
+  effect(() => {
+    elmDisplay.innerText = count.value;
+  });
+  // Console log on change for debugger.
+  effect(() => console.log('count: ', count.value));
+
+  // Listen for button click.
+  btnAdd.addEventListener('click', () => count.value += 1);
+  </script>
+</head>
+<body>
+  <button id="btnAdd">Add One</button>
+  <h1 id="elmDisplay"></h1>
+</body>
+</html>

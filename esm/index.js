@@ -53,22 +53,25 @@ let effects;
 const compute = ({c}) => {
   if (c.size) {
     const prev = effects;
-    effects = prev || new Set;
+    effects = prev || [];
     for (const ref of c) {
-      const computed = ref.deref();
-      if (computed) {
-        // it should never be needed to enforce twice
-        if (!computed.$) {
-          computed.$ = true;
-          if (computed instanceof Effect) {
-            effects.add(computed);
-            update(computed);
-          }
-          else
-            compute(computed.s);
+      if (ref instanceof Effect) {
+        if (!ref.$) {
+          ref.$ = true;
+          effects.push(ref);
+          update(ref);
         }
       }
-      else c.delete(ref);
+      else {
+        const computed = ref.deref();
+        if (computed) {
+          if (!computed.$) {
+            computed.$ = true;
+            compute(computed.s);
+          }
+        }
+        else c.delete(ref);
+      }
     }
     try {
       if (!prev) {
@@ -82,10 +85,10 @@ const compute = ({c}) => {
 
 let computeds;
 class Computed extends Signal {
-  constructor(_) {
+  constructor(_, $) {
     super(_);
-    this.$ = false;   // $ should update ("value for money")
-    this.s = void 0;  // signal
+    this.$ = $;       // $ effect || should update ("value for money")
+    this.s = null;    // signal
   }
   /** @readonly */
   get value() {
@@ -94,14 +97,21 @@ class Computed extends Signal {
       computeds = new Set;
       try {
         this.s = new Reactive(this._());
-        // why WeakRef? well, a computed/effect can depend on signals but
-        // rarely vice-versa (if ever). When a computed/effect is gone the
+        // why WeakRef? well, a computed can depend on signals but
+        // rarely vice-versa (if ever). When a computed is gone the
         // signal should be able to drop it too to avoid memory leaks.
         // The dropping ref part though happens on signal change only but
         // if a singal is GC collected, all its computed/effects can go too.
-        const wr = new WeakRef(this);
+        // effect though cannot be weakly referenced otherwise if nothing
+        // is holding them around through the returned dispose callback,
+        // these might prematurely disappear.
+        // TODO: as computed discarded while signals still around might be an
+        // overengineered use case, should computed just have a reference to
+        // all related signals and free them once disposed?
+        const ref = this.$ ? this : new WeakRef(this);
+        this.$ = false;
         for (const signal of computeds)
-          signal.c.add(wr);
+          signal.c.add(ref);
       }
       finally { computeds = prev }
     }
@@ -129,7 +139,7 @@ const stop = e => {
 };
 class Effect extends Computed {
   constructor(_, a) {
-    super(_);
+    super(_, true);
     this.i = 0;   // index
     this.a = a;   // async
     this.m = a;   // microtask
@@ -139,6 +149,7 @@ class Effect extends Computed {
   get value() {
     this.a ? this.async() : this.sync();
   }
+  deref() { return this }
   async() {
     if (this.m) {
       this.m = false;
@@ -166,6 +177,7 @@ class Effect extends Computed {
     outer = prev;
   }
   stop() {
+    this.$ = true;
     this._ = this.sync = this.async = noop;
     if (this.e.length)
       stop(this.e.splice(0));
