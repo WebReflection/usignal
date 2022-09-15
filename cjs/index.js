@@ -171,6 +171,8 @@ class Effect extends Computed {
       this.r.clear();
       this.r = null;
     }
+    if (this.s)
+      this.s.c.clear();
     this._ = noop;
     if (this.e.length)
       stop(this.e.splice(0));
