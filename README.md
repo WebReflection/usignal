@@ -116,6 +116,6 @@ npm run leak preact
 #### About the leak test
 
 This file is not meant at all as meaningful benchmark against other libraries, it's simply there to allow me to spot regressions on future updates of the library:
-  * there should be zero leaks on signals when a computed reference is garbage collected
+  * ~~there should be zero leaks on signals when a computed reference is garbage collected~~ v0.5.0 removed the *WeakRef*, computeds go when signals go
   * the amount of used memory should always be lower than the initial one
   * the performance should be competitive compared to others

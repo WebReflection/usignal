@@ -5,7 +5,7 @@ const library = argv.find(arg => /^(?:preact|solid|solid-js)$/.test(arg));
 console.log('');
 console.log(`\x1b[1m${library || 'usignal'}\x1b[0m`);
 
-const {signal, computed} = await import(
+const {effect, signal, computed} = await import(
   library ?
     (library === 'preact' ?
       '@preact/signals-core' :
@@ -31,36 +31,59 @@ let comp = computed(() => {
 });
 console.timeEnd('computed value creation');
 
-console.time('computed value retrieval');
-console.log('\x1b[2m', comp.value.slice(0, 50) + '...', '\x1b[0m');
-console.timeEnd('computed value retrieval');
+let compute = true;
+
+console.time('effect creation');
+const dispose = effect(() => {
+  if (compute) {
+    compute = false;
+    console.time('computed value retrieval');
+    console.log('\x1b[2m', comp.value.slice(0, 50) + '...', '\x1b[0m');
+    console.timeEnd('computed value retrieval');
+  }
+});
+console.timeEnd('effect creation');
 
 console.time('updating 26 signals');
 for (const s of signals)
   s.value++;
 console.timeEnd('updating 26 signals');
 
+console.log('\x1b[1mcomputed\x1b[0m', computeds);
+
+if (dispose) {
+  console.time('effect disposal');
+  dispose();
+  console.timeEnd('effect disposal');
+}
+
 console.time('computed value retrieval after update');
 comp.value;
 console.timeEnd('computed value retrieval after update');
 console.timeEnd('total time');
 
+comp = null;
+signals.splice(0);
+
 setTimeout(() => {
   gc();
-  for (const s of signals)
-    s.value = 0;
-  console.log('\n\x1b[1mAFTER\x1b[0m');
-  console.table(memoryUsage());
-  console.log('\n\x1b[1mCOMPUTED\x1b[0m', computeds);
-  if (!library) {
-    let leaks = 0;
-    for (const s of signals)
-      leaks += s.c.size;
-    console.log('\n\x1b[1mLEAKS\x1b[0m', leaks);
-    if (leaks !== 0)
-      throw new Error(`Too many leaks: ${leaks}`);
+  showMem('AFTER');
+
+  if (dispose) {
+    console.time('effect disposal');
+    dispose();
+    console.timeEnd('effect disposal');
   }
 });
 
-console.log('\n\x1b[1mBEFORE\x1b[0m');
-console.table(memoryUsage());
+const showMem = title => {
+  console.log(`\n\x1b[1m${title}\x1b[0m`);
+  const prev = memory;
+  memory = memoryUsage();
+  if (prev && memory.heapUsed > prev.heapUsed)
+    throw new Error(`\n\x1b[1m\x1b[7m MEMORY INCREASED \x1b[0m ${memory.heapUsed - prev.heapUsed}\n`);
+  console.table(memory);
+};
+
+let memory;
+showMem('BEFORE');

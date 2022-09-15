@@ -12,6 +12,7 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
   if (library === 'usignal') {
     assert(JSON.stringify(signal(1)) === '1', 'JSON not working');
     assert((signal(1) + signal(2)) === 3, 'valueOf not working');
+    testStoppedAsyncEffect();
   }
 
   assert(signal(0) instanceof Signal, 'signals are not instances of Signal');
@@ -89,6 +90,20 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
       surname.value = 'Ever';
       assert(invokes.length === 4, 'dispose is not working');
     }
+  }
+
+  function testStoppedAsyncEffect() {
+    const invokes = [];
+    const dispose = effect(
+      () => {
+        invokes.push('this should not happen');
+      },
+      true
+    );
+    dispose();
+    setTimeout(() => {
+      assert(invokes.length === 0, 'async effect shold not have been triggered');
+    });
   }
 
   function testBatch() {

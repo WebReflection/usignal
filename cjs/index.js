@@ -1,6 +1,9 @@
 'use strict';
 /*! (c) Andrea Giammarchi */
 
+const COMPUTED = 0;
+const EFFECT = 1;
+
 const {is} = Object;
 
 let batches;
@@ -57,23 +60,15 @@ const compute = ({c}) => {
   if (c.size) {
     const prev = effects;
     effects = prev || [];
-    for (const ref of c) {
-      if (ref instanceof Effect) {
-        if (!ref.$) {
-          ref.$ = true;
-          effects.push(ref);
-          update(ref);
+    for (const computed of c) {
+      if (!computed.$) {
+        computed.$ = true;
+        if (computed.b === EFFECT) {
+          effects.push(computed);
+          update(computed);
         }
-      }
-      else {
-        const computed = ref.deref();
-        if (computed) {
-          if (!computed.$) {
-            computed.$ = true;
-            compute(computed.s);
-          }
-        }
-        else c.delete(ref);
+        else
+          compute(computed.s);
       }
     }
     try {
@@ -86,37 +81,27 @@ const compute = ({c}) => {
   }
 };
 
-let computeds;
+let reactiveSignals;
 class Computed extends Signal {
-  constructor(_, $) {
+  constructor(_, b) {
     super(_);
-    this.$ = $;       // $ effect || should update ("value for money")
+    this.b = b;       // brand
+    this.$ = false;   // should update ("value for money")
     this.s = null;    // signal
   }
   /** @readonly */
   get value() {
     if (!this.s) {
-      const prev = computeds;
-      computeds = new Set;
+      const prev = reactiveSignals;
+      reactiveSignals = new Set;
       try {
         this.s = new Reactive(this._());
-        // why WeakRef? well, a computed can depend on signals but
-        // rarely vice-versa (if ever). When a computed is gone the
-        // signal should be able to drop it too to avoid memory leaks.
-        // The dropping ref part though happens on signal change only but
-        // if a singal is GC collected, all its computed/effects can go too.
-        // effect though cannot be weakly referenced otherwise if nothing
-        // is holding them around through the returned dispose callback,
-        // these might prematurely disappear.
-        // TODO: as computed discarded while signals still around might be an
-        // overengineered use case, should computed just have a reference to
-        // all related signals and free them once disposed?
-        const ref = this.$ ? this : new WeakRef(this);
-        this.$ = false;
-        for (const signal of computeds)
-          signal.c.add(ref);
+        if (this.b === EFFECT)
+          this.r = reactiveSignals;
+        for (const reactive of reactiveSignals)
+          reactive.c.add(this);
       }
-      finally { computeds = prev }
+      finally { reactiveSignals = prev }
     }
     else if (this.$) {
       try { this.s.value = this._() }
@@ -132,10 +117,10 @@ class Computed extends Signal {
  * @param {() => T} callback a function that can computes and return any value
  * @returns {{value: readonly T}}
  */
-const computed = callback => new Computed(callback);
+const computed = callback => new Computed(callback, COMPUTED);
 exports.computed = computed;
 
-let outer;
+let outerEffect;
 const noop = () => {};
 const stop = e => {
   for (const effect of e)
@@ -143,7 +128,7 @@ const stop = e => {
 };
 class Effect extends Computed {
   constructor(_, a) {
-    super(_, true);
+    super(_, EFFECT).r = null;  // related signals
     this.i = 0;   // index
     this.a = a;   // async
     this.m = a;   // microtask
@@ -153,7 +138,6 @@ class Effect extends Computed {
   get value() {
     this.a ? this.async() : this.sync();
   }
-  deref() { return this }
   async() {
     if (this.m) {
       this.m = false;
@@ -164,25 +148,30 @@ class Effect extends Computed {
     }
   }
   sync() {
-    const prev = outer;
-    const {e} = this;
-    (outer = this).i = 0;
-    const {length} = e;
+    const prev = outerEffect;
+    outerEffect = this;
+    this.i = 0;
+    const {length} = this.e;
     super.value;
+    outerEffect = prev;
     // if effects are present in loops, these can grow or shrink.
     // when these grow, there's nothing to do, as well as when these are
     // still part of the loop, as the callback gets updated anyway.
     // however, if there were more effects before but none now, those can
     // just stop being referenced and go with the GC.
-    if (outer.i < length)
-      stop(e.splice(outer.i));
-    for (const effect of e)
+    if (this.i < length)
+      stop(this.e.splice(this.i));
+    for (const effect of this.e)
       effect.value;
-    outer = prev;
   }
   stop() {
-    this.$ = true;
-    this._ = this.sync = this.async = noop;
+    if (this.r) {
+      for (const reactive of this.r)
+        reactive.c.delete(this);
+      this.r.clear();
+      this.r = null;
+    }
+    this._ = noop;
     if (this.e.length)
       stop(this.e.splice(0));
   }
@@ -196,9 +185,9 @@ class Effect extends Computed {
  */
 const effect = (callback, aSync = false) => {
   let unique;
-  if (outer) {
-    const {i, e} = outer;
-    // bottleneck #2 (first being new WeakRef and deref() dance possibly slow)
+  if (outerEffect) {
+    const {i, e} = outerEffect;
+    // bottleneck:
     // there's literally no way to optimize this path *unless* the callback is
     // already a known one. however, latter case is not really common code so
     // the question is: should I optimize this more than this? 'cause I don't
@@ -207,7 +196,7 @@ const effect = (callback, aSync = false) => {
     if (i === e.length || e[i]._ !== callback)
       e[i] = new Effect(callback, aSync);
     unique = e[i];
-    outer.i++;
+    outerEffect.i++;
   }
   else
     (unique = new Effect(callback, aSync)).value;
@@ -221,8 +210,8 @@ class Reactive extends Signal {
   }
   peek() { return this._ }
   get value() {
-    if (computeds)
-      computeds.add(this);
+    if (reactiveSignals)
+      reactiveSignals.add(this);
     return this._;
   }
   set value(_) {
