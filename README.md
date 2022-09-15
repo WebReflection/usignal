@@ -61,7 +61,7 @@ This library has lazy computed values no matter what, because while refactoring 
   * using *effects* when effects are meant, felt better than having all *computed* somehow "*effecting*" the whole execution
   * as a matter of fact, *effects* are *computed* (literally `Effect extends Computed`) with an *invoke ASAP* logic instead of the lazy one
 
-If I got this part wrong please let me know through use cases that show a *computed* should always re-calc its value on a single graph *signal* dependency, thank you!
+Apparently this brainstorming does indeed make sense, so that [Solid 2.0 is planning to improve "lazy memo"](https://twitter.com/RyanCarniato/status/1569815024964706304).
 
 ### Also differently ...
 
