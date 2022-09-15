@@ -4,7 +4,7 @@
 
 <sup>**Social Media Photo by [Carlos Alberto Gómez Iñiguez](https://unsplash.com/@iniguez) on [Unsplash](https://unsplash.com/)**</sup>
 
-An alternative to [@preact/signals-core](https://github.com/preactjs/signals), 714 bytes minified with brotli.
+An alternative to [@preact/signals-core](https://github.com/preactjs/signals), 720 bytes minified with brotli.
 
 ```js
 import {signal, computed, effect, batch, Signal} from 'usignal';
@@ -31,7 +31,7 @@ This is a *dual module* so it works in either *CommonJS* or *ECMAScript* module 
   * `usignal/async` exports with an enforced *async* effect
   * `usignal` in *browsers* exports `usignal/async` and `usignal/sync` in *servers* or by *default*
   * `usignal/core` just exports the *effect* as callback that accepts an effect and an optionally asynchronous `true` flag, used by all other exports by default, but you decide if a specific effect should sync or async.
-  * the [unpkg/usignal](https://unpkg.com/usignal) default export points at the pre minified [es.js](./es.js) file without any enforcement around *effect* so that alleffects are *sync* by default but can be *async* passing `true` as second parameter
+  * the [unpkg/usignal](https://unpkg.com/usignal) default export points at the pre minified [es.js](./es.js) file without any enforcement around *effect*, lise `usignal/core`, so that all effects are *sync* by default but can be *async* passing `true` as second parameter
 
 Current exports are exactly these:
 
@@ -116,6 +116,6 @@ npm run leak preact
 #### About the leak test
 
 This file is not meant at all as meaningful benchmark against other libraries, it's simply there to allow me to spot regressions on future updates of the library:
-  * ~~there should be zero leaks on signals when a computed reference is garbage collected~~ v0.5.0 removed the *WeakRef*, computeds go when signals go
+  * ~~there should be zero leaks on signals when a computed reference is garbage collected~~ v0.5.0 removed the *WeakRef*, computeds go when signals go ... [but why?!](https://twitter.com/WebReflection/status/1570380914613694466)
   * the amount of used memory should always be lower than the initial one
   * the performance should be competitive compared to others
