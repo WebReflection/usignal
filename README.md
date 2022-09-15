@@ -1,6 +1,6 @@
 # usignal
 
-[![build status](https://github.com/WebReflection/usignal/actions/workflows/node.js.yml/badge.svg)](https://github.com/WebReflection/usignal/actions) [![Coverage Status](https://coveralls.io/repos/github/WebReflection/usignal/badge.svg?branch=main)](https://coveralls.io/github/WebReflection/usignal?branch=main)
+[![Downloads](https://img.shields.io/npm/dm/usignal.svg)](https://www.npmjs.com/package/usignal) [![Coverage Status](https://coveralls.io/repos/github/WebReflection/usignal/badge.svg?branch=main)](https://coveralls.io/github/WebReflection/usignal?branch=main) [![build status](https://github.com/WebReflection/usignal/actions/workflows/node.js.yml/badge.svg)](https://github.com/WebReflection/usignal/actions)
 
 <sup>**Social Media Photo by [Carlos Alberto Gómez Iñiguez](https://unsplash.com/@iniguez) on [Unsplash](https://unsplash.com/)**</sup>
 
@@ -65,7 +65,9 @@ Apparently this brainstorming does indeed make sense, so that [Solid 2.0 is plan
 
 ### Also differently ...
 
-One thing I was expecting from libraries that inspired this module is the ability to implicitly have signals values:
+Apparently `@preact/signals-core` [doesnt't support nested effects](https://github.com/preactjs/signals/issues/152#issuecomment-1247693864) while *usignal* does without major issues.
+
+On top of that, one thing I was expecting from libraries that inspired this module is the ability to implicitly have signals values:
 
 ```js
 const one = signal(1);
@@ -89,7 +91,7 @@ Addictionally, *usignal* has also a `toJSON` helper to serialize out of the box 
 
 ## Tests
 
-This module is 100% code covered, including the *WeakRef* which is tested through the [test/leak.js](./test/leak.js) file, which is part of the *build* script process.
+This module is 100% code covered, including ~~the *WeakRef*~~ possible leaks which is tested through the [test/leak.js](./test/leak.js) file, which is part of the *build* script process.
 
 To use other libraries as reference, I have also added *preact/signals-core* and *solid-js* dev-dependencies within the test folder.
 
