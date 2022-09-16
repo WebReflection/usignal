@@ -1,4 +1,4 @@
-# usignal
+# <em>µ</em>signal
 
 [![Downloads](https://img.shields.io/npm/dm/usignal.svg)](https://www.npmjs.com/package/usignal) [![Coverage Status](https://coveralls.io/repos/github/WebReflection/usignal/badge.svg?branch=main)](https://coveralls.io/github/WebReflection/usignal?branch=main) [![build status](https://github.com/WebReflection/usignal/actions/workflows/node.js.yml/badge.svg)](https://github.com/WebReflection/usignal/actions)
 
