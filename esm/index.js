@@ -27,6 +27,7 @@ export const batch = callback => {
 
 /**
  * A reactive signal with a value property exposed also via toString and valueOf.
+ * @template T
  */
 export class Signal {
   /** @param {T} value the value carried along the signal. */
@@ -111,6 +112,7 @@ class Computed extends Signal {
 /**
  * Returns a read-only Signal that is invoked only when any of the internally
  * used signals, as in within the callback, is unknown or updated.
+ * @template T
  * @param {() => T} callback a function that can computes and return any value
  * @returns {{value: readonly T}}
  */
@@ -179,7 +181,7 @@ class Effect extends Computed {
  * Invokes a function when any of its internal signals or computed values change.
  * @param {() => void} callback the function to re-invoke on changes.
  * @param {boolean} [aSync=false] specify an asynchronous effect instead
- * @returns {function} a callback to stop/dispose the effect
+ * @returns {() => void} a callback to stop/dispose the effect
  */
 export const effect = (callback, aSync = false) => {
   let unique;
@@ -221,6 +223,7 @@ class Reactive extends Signal {
 
 /**
  * Returns a writable Signal that side-effects whenever its value gets updated.
+ * @template T
  * @param {T} value the value the Signal should carry along
  * @returns {{value: T}}
  */
