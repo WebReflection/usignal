@@ -26,13 +26,13 @@ export const batch = callback => {
 };
 
 /**
- * A reactive signal with a value property exposed also via toString and valueOf.
+ * A signal with a value property also exposed via toJSON, toString and valueOf.
+ * When created via computed, the `value` property is **readonly**.
  * @template T
  */
 export class Signal {
   /** @param {T} value the value carried along the signal. */
   constructor(value) {
-    /** @private */
     this._ = value;
   }
 
@@ -114,7 +114,7 @@ class Computed extends Signal {
  * used signals, as in within the callback, is unknown or updated.
  * @template T
  * @param {() => T} callback a function that can computes and return any value
- * @returns {{value: readonly T}}
+ * @returns {Signal<T>}
  */
 export const computed = callback => new Computed(callback, COMPUTED);
 
@@ -225,6 +225,6 @@ class Reactive extends Signal {
  * Returns a writable Signal that side-effects whenever its value gets updated.
  * @template T
  * @param {T} value the value the Signal should carry along
- * @returns {{value: T}}
+ * @returns {Signal<T>}
  */
 export const signal = value => new Reactive(value);

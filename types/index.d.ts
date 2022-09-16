@@ -1,13 +1,13 @@
 export function batch(callback: () => void): void;
 /**
- * A reactive signal with a value property exposed also via toString and valueOf.
+ * A signal with a value property also exposed via toJSON, toString and valueOf.
+ * When created via computed, the `value` property is **readonly**.
  * @template T
  */
 export class Signal<T> {
     /** @param {T} value the value carried along the signal. */
     constructor(value: T);
-    /** @private */
-    private _;
+    value: T;
     /** @returns {T} */
     toJSON(): T;
     /** @returns {T} */
@@ -15,10 +15,6 @@ export class Signal<T> {
     /** @returns {T} */
     valueOf(): T;
 }
-export function computed<T>(callback: () => T): {
-    value: T;
-};
+export function computed<T>(callback: () => T): Signal<T>;
 export function effect(callback: () => void, aSync?: boolean): () => void;
-export function signal<T>(value: T): {
-    value: T;
-};
+export function signal<T>(value: T): Signal<T>;
