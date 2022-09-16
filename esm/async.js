@@ -1,10 +1,10 @@
-import {signal, computed, effect as fx, batch, Signal} from './index.js';
+export * from './index.js';
+import {effect as fx} from './index.js';
 
 /**
  * Invokes asynchronously a function when any of its internal signals or computed values change.
- * @param {function} callback the function to asynchronously re-invoke on changes.
+ * @param {() => void} callback the function to re-invoke on changes.
+ * @returns {() => void} a callback to stop/dispose the effect
  */
 const effect = callback => fx(callback, true);
-
-export {signal, computed, effect, batch, Signal};
-
+export {effect};
