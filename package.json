@@ -35,23 +35,28 @@
   "exports": {
     ".": {
       "browser": {
+        "types": "./types/esm/async.d.ts",
         "import": "./esm/async.js",
         "default": "./cjs/async.js"
       },
       "default": {
+        "types": "./types/esm/sync.d.ts",
         "import": "./esm/index.js",
         "default": "./cjs/index.js"
       }
     },
     "./core": {
+      "types": "./types/esm/index.d.ts",
       "import": "./esm/index.js",
       "default": "./cjs/index.js"
     },
     "./sync": {
+      "types": "./types/esm/sync.d.ts",
       "import": "./esm/sync.js",
       "default": "./cjs/sync.js"
     },
     "./async": {
+      "types": "./types/esm/async.d.ts",
       "import": "./esm/async.js",
       "default": "./cjs/async.js"
     },
