@@ -65,9 +65,7 @@ Apparently this brainstorming does indeed make sense, so that [Solid 2.0 is plan
 
 ### Also differently ...
 
-Apparently `@preact/signals-core` [doesnt't support nested effects](https://github.com/preactjs/signals/issues/152#issuecomment-1247693864) while *usignal* does without major issues.
-
-On top of that, one thing I was expecting from libraries that inspired this module is the ability to implicitly have signals values:
+One thing I was expecting from libraries that inspired this module is the ability to implicitly have signals values:
 
 ```js
 const one = signal(1);
