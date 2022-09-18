@@ -85,31 +85,39 @@ const compute = ({c}) => {
   }
 };
 
-let reactiveSignals;
+let computedSignals;
+let realtedSignals;
+const clear = self => {
+  for (const signal of self.r)
+    signal.c.delete(self);
+  self.r.clear();
+};
 class Computed extends Signal {
   constructor(_, b) {
     super(_);
     this.b = b;       // brand
     this.$ = false;   // should update ("value for money")
     this.s = null;    // signal
+    this.r = new Set; // related signals
   }
   /** @readonly */
   get value() {
-    if (!this.s) {
-      const prev = reactiveSignals;
-      reactiveSignals = new Set;
-      try {
+    const cs = computedSignals;
+    const rs = realtedSignals;
+    try {
+      computedSignals = this;
+      realtedSignals = this.r;
+      if (!this.s)
         this.s = new Reactive(this._());
-        if (this.b === EFFECT)
-          this.r = reactiveSignals;
-        for (const reactive of reactiveSignals)
-          reactive.c.add(this);
+      else if (this.$) {
+        clear(this);
+        this.s.value = this._();
       }
-      finally { reactiveSignals = prev }
     }
-    else if (this.$) {
-      try { this.s.value = this._() }
-      finally { this.$ = false }
+    finally {
+      this.$ = false;
+      computedSignals = cs;
+      realtedSignals = rs;
     }
     return this.s.value;
   }
@@ -133,7 +141,7 @@ const stop = e => {
 };
 class Effect extends Computed {
   constructor(_, a) {
-    super(_, EFFECT).r = null;  // related signals
+    super(_, EFFECT);
     this.i = 0;   // index
     this.a = a;   // async
     this.m = a;   // microtask
@@ -158,7 +166,6 @@ class Effect extends Computed {
     this.i = 0;
     const {length} = this.e;
     super.value;
-    outerEffect = prev;
     // if effects are present in loops, these can grow or shrink.
     // when these grow, there's nothing to do, as well as when these are
     // still part of the loop, as the callback gets updated anyway.
@@ -166,18 +173,15 @@ class Effect extends Computed {
     // just stop being referenced and go with the GC.
     if (this.i < length)
       stop(this.e.splice(this.i));
-    for (const effect of this.e)
-      effect.value;
+    for (const {value} of this.e);
+    outerEffect = prev;
   }
   stop() {
-    if (this.r) {
-      for (const reactive of this.r)
-        reactive.c.delete(this);
-      this.r.clear();
-      this.r = null;
-    }
-    if (this.s)
+    if (this.s) {
+      clear(this);
       this.s.c.clear();
+      this.s = this.r = null;
+    }
     this._ = noop;
     if (this.e.length)
       stop(this.e.splice(0));
@@ -217,8 +221,10 @@ class Reactive extends Signal {
   }
   peek() { return this._ }
   get value() {
-    if (reactiveSignals)
-      reactiveSignals.add(this);
+    if (computedSignals) {
+      this.c.add(computedSignals);
+      realtedSignals.add(this);
+    }
     return this._;
   }
   set value(_) {
