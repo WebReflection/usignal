@@ -9,6 +9,8 @@ export class Signal<T> {
     constructor(value: T);
     value: T;
     /** @returns {T} */
+    then(): T;
+    /** @returns {T} */
     toJSON(): T;
     /** @returns {T} */
     toString(): T;

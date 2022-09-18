@@ -13,6 +13,10 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
     assert(JSON.stringify(signal(1)) === '1', 'JSON not working');
     assert((signal(1) + signal(2)) === 3, 'valueOf not working');
     testStoppedAsyncEffect();
+    (async () => {
+      assert(await signal(3) === 3, 'thenable signal');
+      assert(await computed(() => 4) === 4, 'thenable computed');
+    })();
   }
 
   assert(signal(0) instanceof Signal, 'signals are not instances of Signal');
