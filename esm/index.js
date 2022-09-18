@@ -33,6 +33,7 @@ export const batch = callback => {
 export class Signal {
   /** @param {T} value the value carried along the signal. */
   constructor(value) {
+    /** @protected */
     this._ = value;
   }
 

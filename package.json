@@ -10,8 +10,7 @@
     "test": "c8 node --expose-gc test/index.js $@",
     "size": "cat es.js | brotli | wc -c",
     "leak": "node --expose-gc ./test/leak.js $@",
-    "types": "tsc -p . && npm run fix:types",
-    "fix:types": "sed -i \"s/_: T;/value: T;/\" types/index.d.ts",
+    "types": "tsc -p .",
     "readme-size": "sed -i \"s/, \\([0-9]\\+\\) bytes/, $(cat es.js | brotli | wc -c) bytes/\" README.md",
     "coverage": "mkdir -p ./coverage; c8 report --reporter=text-lcov > ./coverage/lcov.info"
   },

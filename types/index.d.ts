@@ -7,7 +7,8 @@ export function batch(callback: () => void): void;
 export class Signal<T> {
     /** @param {T} value the value carried along the signal. */
     constructor(value: T);
-    value: T;
+    /** @protected */
+    protected _: T;
     /** @returns {T} */
     toJSON(): T;
     /** @returns {T} */
