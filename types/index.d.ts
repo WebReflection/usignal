@@ -9,6 +9,8 @@ export class Signal<T> {
     constructor(value: T);
     /** @protected */
     protected _: T;
+    /** @type T */
+    value: T;
     /** @returns {T} */
     toJSON(): T;
     /** @returns {T} */

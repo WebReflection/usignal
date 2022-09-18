@@ -35,6 +35,8 @@ export class Signal {
   constructor(value) {
     /** @protected */
     this._ = value;
+    /** @type T */
+    this.value
   }
 
   /** @returns {T} */
