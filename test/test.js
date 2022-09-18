@@ -40,8 +40,10 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
 
   testDiamond();
   loopedEffects();
+
   nestedEffects();
   nestedIndependentEffects();
+  testConditional();
 
   function testPrimitive() {
     const str = signal('string');
@@ -381,5 +383,28 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
     a.value = 3;
     console.log('------');
     console.log('');
+  }
+
+  function testConditional() {
+    const first = signal('John');
+    const last = signal('Doe');
+    const full = computed(() => {
+      console.log('Computing name', first.value, last.value);
+      return `${first.value} ${last.value}`;
+    });
+    const nickname = signal(undefined);
+
+    effect(() => {
+      if (nickname.value) {
+        console.log('profile name', nickname.value);
+      } else {
+        console.log('profile name', full.value);
+      }
+    });
+
+    nickname.value = 'jdoe';
+
+    // this should _not_ execute effects, right?
+    last.value = 'Smith';
   }
 };
