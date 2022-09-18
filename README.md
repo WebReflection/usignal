@@ -65,6 +65,8 @@ Apparently this brainstorming does indeed make sense, so that [Solid 2.0 is plan
 
 ### Also differently ...
 
+Both *signal* and *computed* returns a *thenable* instance that can be used to `await signal` or `await computed` without needing to use `await signal.value` or `await computed.value` out of [this poll](https://twitter.com/WebReflection/status/1571400086902476801).
+
 One thing I was expecting from libraries that inspired this module is the ability to implicitly have signals values:
 
 ```js
