@@ -4,7 +4,7 @@
 
 <sup>**Social Media Photo by [Carlos Alberto Gómez Iñiguez](https://unsplash.com/@iniguez) on [Unsplash](https://unsplash.com/)**</sup>
 
-An alternative to [@preact/signals-core](https://github.com/preactjs/signals), 733 bytes minified with brotli.
+An alternative to [@preact/signals-core](https://github.com/preactjs/signals), also shipped as [solid-js basic reactivity API](https://www.solidjs.com/docs/latest), 733 bytes minified with brotli.
 
 ```js
 import {signal, computed, effect, batch, Signal} from 'usignal';
@@ -53,7 +53,7 @@ The `Signal` export is useful only as brand check for either *computed* or *sign
 To allow developers to tray and use different patterns there are a few variants of this module, still based on the very same core primitives:
 
   * `usignal/fn`, with its `*/sync` and `*/async` variants, where signals are callbacks so that `signal()` returns a its value, and `signal(value)` updates its value and return the new one. Comouteds do not update anything so `computed()` returns values. This is a variant around the `.value` accessor pattern I don't necessarily disike, specially when we'd like to *signal* that a signal is being observed: `effect(() => { mySignal(); })`
-  * `usignal/solid`, with its `*/sync` and `*/async` variants, where the module exports `createEffect`, `createMemo`, and `createSignal`, mimicking the same behavior (and returned values) as [solid-js](https://www.solidjs.com/docs/latest/api). This is handy to compare the two or drop-in usignal in solid-js already based code.
+  * `usignal/solid`, with its `*/sync` and `*/async` variants, where the module exports `createEffect`, `createMemo`, and `createSignal`, mimicking the same behavior (and returned values) as [solid-js basic reactivity API](https://www.solidjs.com/docs/latest/api). This is handy to compare the two or drop-in usignal in solid-js already based code.
 
 ---
 
