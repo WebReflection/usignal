@@ -1,4 +1,4 @@
-export default (library, {signal, computed, effect, batch, Signal}) => {
+export default (library, {signal, computed, effect}) => {
 
   console.log('');
   console.log(`\x1b[1m${library} async\x1b[0m`);
@@ -18,10 +18,11 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
     const fullName = computed(() => name.value + ' ' + surname.value);
 
     effect(
-      () => {
-        invokes.push(fullName.value);
+      prev => {
+        invokes.push(fullName.value + prev);
       },
-      true
+      1,
+      {async: true}
     );
 
     assert(invokes.length === 0, 'effect should not be invoked');
@@ -31,7 +32,7 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
 
     queueMicrotask(() => {
       assert(invokes.length === 1, 'effect should have been invoked once');
-      assert(invokes.join('\n') === 'John Doe', 'unexpected effect');
+      assert(invokes.join('\n') === 'John Doe1', 'unexpected effect');
     });
   }
 };

@@ -1,7 +1,9 @@
 export * from "./index.js";
 /**
  * Invokes asynchronously a function when any of its internal signals or computed values change.
- * @param {() => void} callback the function to re-invoke on changes.
- * @returns {() => void} a callback to stop/dispose the effect
+ *
+ * Returns a dispose callback.
+ * @template T
+ * @type {<T>(fn: (v?: T) => T?, value?: T) => () => void 0}
  */
-export function effect(callback: () => void): () => void;
+export const effect: <T>(fn: (v?: T) => T, value?: T) => () => void;

@@ -17,6 +17,16 @@ export class Signal<T> {
     /** @returns {T} */
     valueOf(): T;
 }
-export function computed<T>(callback: () => T): Signal<T>;
-export function effect(callback: () => void, aSync?: boolean): () => void;
-export function signal<T>(value: T): Signal<T>;
+/**
+ * Returns a read-only Signal that is invoked only when any of the internally
+ * used signals, as in within the callback, is unknown or updated.
+ * @template T
+ * @type {<T>(fn: (v: T) => T, value?: T, options?: { equals?: false | ((prev: T, next: T) => boolean) }) => Signal<T>}
+ */
+export const computed: <T>(fn: (v: T) => T, value?: T, options?: {
+    equals?: false | ((prev: T, next: T) => boolean);
+}) => Signal<T>;
+export function effect(callback: () => void, value?: T, options?: boolean): () => void;
+export function signal<T>(value: T, options?: {
+    equals?: false | ((prev: T, next: T) => boolean);
+}): Signal<T>;

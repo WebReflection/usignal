@@ -17,6 +17,14 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
       assert(await signal(3) === 3, 'thenable signal');
       assert(await computed(() => 4) === 4, 'thenable computed');
     })();
+
+    const one = signal(1, {equals: false});
+    const invokes = [];
+    const dispose = effect(() => {
+      invokes.push(one.value);
+    });
+    one.value = 1;
+    assert(invokes.join(',') === '1,1', 'equals false not working');
   }
 
   assert(signal(0) instanceof Signal, 'signals are not instances of Signal');
@@ -104,7 +112,8 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
       () => {
         invokes.push('this should not happen');
       },
-      true
+      void 0,
+      {async: true}
     );
     dispose();
     setTimeout(() => {

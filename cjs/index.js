@@ -1,9 +1,6 @@
 'use strict';
 /*! (c) Andrea Giammarchi */
 
-const COMPUTED = 0;
-const EFFECT = 1;
-
 const {is} = Object;
 
 let batches;
@@ -67,7 +64,7 @@ const compute = ({c}) => {
     for (const computed of c) {
       if (!computed.$) {
         computed.$ = true;
-        if (computed.b === EFFECT) {
+        if (computed.f) {
           effects.push(computed);
           update(computed);
         }
@@ -93,12 +90,14 @@ const clear = self => {
   self.r.clear();
 };
 class Computed extends Signal {
-  constructor(_, b) {
+  constructor(_, v, o) {
     super(_);
-    this.b = b;       // brand
+    this.f = false;   // is effect?
     this.$ = false;   // should update ("value for money")
     this.s = null;    // signal
     this.r = new Set; // related signals
+    this.o = o;       // options
+    this.v = v;       // value to pass along
   }
   /** @readonly */
   get value() {
@@ -108,10 +107,10 @@ class Computed extends Signal {
       computedSignals = this;
       realtedSignals = this.r;
       if (!this.s)
-        this.s = new Reactive(this._());
+        this.s = new Reactive(this._(this.v), this.v = this.o);
       else if (this.$) {
         clear(this);
-        this.s.value = this._();
+        this.s.value = this._(this.s._);
       }
     }
     finally {
@@ -123,14 +122,16 @@ class Computed extends Signal {
   }
 }
 
+const defaults = {async: false, equals: true};
+
 /**
  * Returns a read-only Signal that is invoked only when any of the internally
  * used signals, as in within the callback, is unknown or updated.
  * @template T
- * @param {() => T} callback a function that can computes and return any value
- * @returns {Signal<T>}
+ * @type {<T>(fn: (v: T) => T, value?: T, options?: { equals?: false | ((prev: T, next: T) => boolean) }) => Signal<T>}
  */
-const computed = callback => new Computed(callback, COMPUTED);
+const computed = (fn, value, options = defaults) =>
+                          new Computed(fn, value, options);
 exports.computed = computed;
 
 let outerEffect;
@@ -140,13 +141,13 @@ const stop = e => {
     effect.stop();
 };
 class Effect extends Computed {
-  constructor(_, a) {
-    super(_, EFFECT);
-    this.i = 0;   // index
-    this.a = a;   // async
-    this.m = a;   // microtask
-    this.e = [];  // effects
-                  // "I am effects" ^_^;;
+  constructor(_, v, o) {
+    super(_, v, o).f = true;
+    this.i = 0;         // index
+    this.a = !!o.async; // async
+    this.m = true;      // microtask
+    this.e = [];        // effects
+                        // "I am effects" ^_^;;
   }
   get value() {
     this.a ? this.async() : this.sync();
@@ -191,10 +192,11 @@ class Effect extends Computed {
 /**
  * Invokes a function when any of its internal signals or computed values change.
  * @param {() => void} callback the function to re-invoke on changes.
- * @param {boolean} [aSync=false] specify an asynchronous effect instead
+ * @param {T} [value] a value to pass along a sargument and previously returned value
+ * @param {boolean} [options=false] specify an asynchronous effect instead
  * @returns {() => void} a callback to stop/dispose the effect
  */
-const effect = (callback, aSync = false) => {
+const effect = (callback, value, options = defaults) => {
   let unique;
   if (outerEffect) {
     const {i, e} = outerEffect;
@@ -205,19 +207,22 @@ const effect = (callback, aSync = false) => {
     // think the amount of code needed to understand if a callback is *likely*
     // the same as before makes any sense + correctness would be trashed.
     if (i === e.length || e[i]._ !== callback)
-      e[i] = new Effect(callback, aSync);
+      e[i] = new Effect(callback, value, options);
     unique = e[i];
     outerEffect.i++;
   }
   else
-    (unique = new Effect(callback, aSync)).value;
+    (unique = new Effect(callback, value, options)).value;
   return () => { unique.stop() };
 };
 exports.effect = effect;
 
+const skip = () => false;
 class Reactive extends Signal {
-  constructor(_) {
-    super(_).c = new Set; // computeds
+  constructor(_, {equals}) {
+    super(_)
+    this.c = new Set;                                 // computeds
+    this.s = equals === true ? is : (equals || skip); // (don't) skip updates
   }
   peek() { return this._ }
   get value() {
@@ -228,7 +233,7 @@ class Reactive extends Signal {
     return this._;
   }
   set value(_) {
-    if (!is(_, this._)) {
+    if (!this.s(this._, _)) {
       this._ = _;
       compute(this);
     }
@@ -239,7 +244,8 @@ class Reactive extends Signal {
  * Returns a writable Signal that side-effects whenever its value gets updated.
  * @template T
  * @param {T} value the value the Signal should carry along
+ * @param {{equals?: false | ((prev: T, next: T) => boolean)}} [options] signal options
  * @returns {Signal<T>}
  */
-const signal = value => new Reactive(value);
+const signal = (value, options = defaults) => new Reactive(value, options);
 exports.signal = signal;
