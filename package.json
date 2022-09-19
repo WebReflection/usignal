@@ -45,6 +45,42 @@
         "default": "./cjs/index.js"
       }
     },
+    "./fn": {
+      "browser": {
+        "import": "./esm/fn/async.js",
+        "default": "./cjs/fn/async.js"
+      },
+      "default": {
+        "import": "./esm/fn/index.js",
+        "default": "./cjs/fn/index.js"
+      }
+    },
+    "./fn/async": {
+      "import": "./esm/fn/async.js",
+      "default": "./cjs/fn/async.js"
+    },
+    "./fn/sync": {
+      "import": "./esm/fn/sync.js",
+      "default": "./cjs/fn/sync.js"
+    },
+    "./solid": {
+      "browser": {
+        "import": "./esm/solid/async.js",
+        "default": "./cjs/solid/async.js"
+      },
+      "default": {
+        "import": "./esm/solid/index.js",
+        "default": "./cjs/solid/index.js"
+      }
+    },
+    "./solid/async": {
+      "import": "./esm/solid/async.js",
+      "default": "./cjs/solid/async.js"
+    },
+    "./solid/sync": {
+      "import": "./esm/solid/sync.js",
+      "default": "./cjs/solid/sync.js"
+    },
     "./core": {
       "types": "./types/esm/index.d.ts",
       "import": "./esm/index.js",
