@@ -99,9 +99,6 @@
     "./package.json": "./package.json"
   },
   "unpkg": "es.js",
-  "directories": {
-    "test": "test"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/WebReflection/usignal.git"
@@ -110,5 +107,5 @@
     "url": "https://github.com/WebReflection/usignal/issues"
   },
   "homepage": "https://github.com/WebReflection/usignal#readme",
-  "description": ""
+  "description": "A blend of @preact/signals-core and solid-js basic reactivity API"
 }

@@ -4,7 +4,7 @@
 
 <sup>**Social Media Photo by [Carlos Alberto Gómez Iñiguez](https://unsplash.com/@iniguez) on [Unsplash](https://unsplash.com/)**</sup>
 
-An alternative to [@preact/signals-core](https://github.com/preactjs/signals), also shipped as [solid-js basic reactivity API](https://www.solidjs.com/docs/latest), 733 bytes minified with brotli.
+A blend of [@preact/signals-core](https://github.com/preactjs/signals) and [solid-js basic reactivity API](https://www.solidjs.com/docs/latest), with API and DX mostly identical to *@preact/signals-core* but extra goodness inspired by *solid-js*, 790 bytes minified with brotli.
 
 ```js
 import {signal, computed, effect, batch, Signal} from 'usignal';
@@ -15,7 +15,8 @@ computed(() => {}) instanceof Signal; // true
 
 effect(
   () => { console.log('fx') },
-  true  // optionally make the effect async: false by default
+  void 0,       // optional value to pass along the callback as initial/prev value
+  {async: true} // optionally make the effect async: false by default
 );
 
 // try every example shown in
@@ -53,19 +54,23 @@ The `Signal` export is useful only as brand check for either *computed* or *sign
 To allow developers to tray and use different patterns there are a few variants of this module, still based on the very same core primitives:
 
   * `usignal/fn`, with its `*/sync` and `*/async` variants, where signals are callbacks so that `signal()` returns a its value, and `signal(value)` updates its value and return the new one. Comouteds do not update anything so `computed()` returns values. This is a variant around the `.value` accessor pattern I don't necessarily disike, specially when we'd like to *signal* that a signal is being observed: `effect(() => { mySignal(); })`
-  * `usignal/solid`, with its `*/sync` and `*/async` variants, where the module exports [createEffect](https://www.solidjs.com/docs/latest#createeffect), [createMemo](https://www.solidjs.com/docs/latest#creatememo) (withut options), and [createSignal](https://www.solidjs.com/docs/latest#createsignal) (also without options), mimicking the behavior (and returned values) as [solid-js basic reactivity API](https://www.solidjs.com/docs/latest/api). This is handy to compare the two or drop-in usignal in solid-js already based code.
+  * `usignal/solid`, with its `*/sync` and `*/async` variants, where the module exports [createEffect](https://www.solidjs.com/docs/latest#createeffect), [createMemo](https://www.solidjs.com/docs/latest#creatememo), and [createSignal](https://www.solidjs.com/docs/latest#createsignal), mimicking the behavior (and returned values) as [solid-js basic reactivity API](https://www.solidjs.com/docs/latest/api). This is handy to compare the two or drop-in usignal in solid-js already based code.
 
 ---
 
 ## Differently thought ...
 
-This library has lazy, non side-effecting, computed values, something [@preact/signals-core](https://github.com/preactjs/signals) recently introduced and [Solid 2.0 is planning to improve](https://twitter.com/RyanCarniato/status/1569815024964706304).
+  * the default comparison for equality is not based on `===` but on [Object.is](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/is). This might be a tiny, hopefully irrelevant, performance penalty, but I feel like guarding *NaN* cases in reactivity is a step forward to avoid infinite loops out of *NaN* poisoning some computation. *+0* and *-0* are less interesting cases to tackle, still these might be fundamental in some case, hence preserved in this moudle.
 
-### Also differently ...
+  * this library has lazy, non side-effecting, computed values, something [@preact/signals-core](https://github.com/preactjs/signals) recently introduced and [Solid 2.0 is planning to improve](https://twitter.com/RyanCarniato/status/1569815024964706304).
 
-Both *signal* and *computed* returns a *thenable* instance that can be used to `await signal` or `await computed` without needing to use `await signal.value` or `await computed.value` out of [this poll](https://twitter.com/WebReflection/status/1571400086902476801).
+  * computed accepts an initial value otherwise passed as previous one by default, mimicking *solid-js* `useMemo(fn[, value[, options]])` signature.
 
-One thing I was expecting from libraries that inspired this module is the ability to implicitly have signals values:
+  * both `signal(value[, options])` and `computed(fn[, value[, options]])` accept an optionally *options* argument, currently implementing [equals](https://www.solidjs.com/docs/latest#options) as explained in *silid-js* documentation.
+
+  * both *signal* and *computed* also return a *thenable* instance that can be used to `await signal` or `await computed` without needing to use `await signal.value` or `await computed.value` out of [this poll](https://twitter.com/WebReflection/status/1571400086902476801).
+
+Last, but not least, I was expecting from libraries that inspired this module is the ability to implicitly have signals values:
 
 ```js
 const one = signal(1);
@@ -83,7 +88,6 @@ Addictionally, *usignal* has also a `toJSON` helper to serialize out of the box 
 
 ### TODO
 
-- [x] provide *async* effects to play well with libraries based on signals - v0.4.x
 - [ ] find out some good benchmark to test against *preact/signals-core* and *solid-js* to see if there's room for some improvement
 
 
