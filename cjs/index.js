@@ -49,28 +49,6 @@ class Signal {
 }
 exports.Signal = Signal
 
-const update = ({e}) => {
-  for (const effect of e) {
-    effect.$ = true;
-    update(effect);
-  }
-};
-
-const compute = (signal, effects) => {
-  for (const computed of signal.c) {
-    if (!computed.$ && computed.r.has(signal)) {
-      computed.$ = true;
-      if (computed.f) {
-        effects.push(computed);
-        update(computed);
-      }
-      else
-        compute(computed.s, effects);
-    }
-  }
-  return effects;
-};
-
 let computedSignal;
 class Computed extends Signal {
   constructor(_, v, o) {
@@ -214,7 +192,28 @@ class Reactive extends Signal {
   set value(_) {
     if (!this.s(this._, _)) {
       this._ = _;
-      for (const effect of compute(this, []))
+      const effects = [];
+      const stack = [this];
+      for (const signal of stack) {
+        for (const computed of signal.c) {
+          if (!computed.$ && computed.r.has(signal)) {
+            computed.$ = true;
+            if (computed.f) {
+              effects.push(computed);
+              const stack = [computed.e];
+              for (const e of stack) {
+                for (const effect of e) {
+                  effect.$ = true;
+                  stack.push(effect.e);
+                }
+              }
+            }
+            else
+              stack.push(computed.s);
+          }
+        }
+      }
+      for (const effect of effects)
         batches ? batches.push(() => { effect.value }) : effect.value;
     }
   }
