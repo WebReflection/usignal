@@ -17,8 +17,7 @@ const batch = callback => {
   try {
     callback();
     if (!prev)
-      for (const callback of batches)
-        callback();
+      for (const {value} of batches);
   }
   finally { batches = prev }
 };
@@ -206,7 +205,7 @@ class Reactive extends Signal {
         }
       }
       for (const effect of effects)
-        batches ? batches.push(() => { effect.value }) : effect.value;
+        batches ? batches.push(effect) : effect.value;
     }
   }
 }
