@@ -126,11 +126,9 @@ class Effect extends Computed {
     outerEffect = prev;
   }
   stop() {
-    if (this.s) {
-      this.r.clear();
-      this.s.c.clear();
-    }
     this._ = noop;
+    this.r.clear();
+    this.s.c.clear();
     if (this.e.length)
       stop(this.e.splice(0));
   }
