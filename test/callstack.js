@@ -49,6 +49,7 @@ function testUsignal(report, layerCount) {
 
   var end = layer;
 
+  report.layers = layerCount;
   report.beforeChange = [end.prop1.value, end.prop2.value, end.prop3.value, end.prop4.value];
 
   var st = performance.now();
