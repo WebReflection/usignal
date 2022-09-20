@@ -51,30 +51,24 @@ exports.Signal = Signal
 
 let computedSignal;
 class Computed extends Signal {
-  constructor(_, v, o) {
+  constructor(_, v, o, f) {
     super(_);
-    this.f = false;   // is effect?
-    this.$ = false;   // should update ("value for money")
-    this.s = null;    // signal
-    this.r = new Set; // related signals
-    this.o = o;       // options
-    this.v = v;       // value to pass along
+    this.f = f;                   // is effect?
+    this.$ = true;                // should update ("value for money")
+    this.r = new Set;             // related signals
+    this.s = new Reactive(v, o);  // signal
   }
   /** @readonly */
   get value() {
-    const prev = computedSignal;
-    try {
+    if (this.$) {
+      const prev = computedSignal;
       computedSignal = this;
-      if (!this.s)
-        this.s = new Reactive(this._(this.v), this.v = this.o);
-      else if (this.$) {
-        this.r.clear();
-        this.s.value = this._(this.s._);
+      this.r.clear();
+      try { this.s.value = this._(this.s._) }
+      finally {
+        this.$ = false;
+        computedSignal = prev;
       }
-    }
-    finally {
-      this.$ = false;
-      computedSignal = prev;
     }
     return this.s.value;
   }
@@ -89,7 +83,7 @@ const defaults = {async: false, equals: true};
  * @type {<T>(fn: (v: T) => T, value?: T, options?: { equals?: boolean | ((prev: T, next: T) => boolean) }) => Signal<T>}
  */
 const computed = (fn, value, options = defaults) =>
-                          new Computed(fn, value, options);
+                          new Computed(fn, value, options, false);
 exports.computed = computed;
 
 let outerEffect;
@@ -100,7 +94,7 @@ const stop = e => {
 };
 class Effect extends Computed {
   constructor(_, v, o) {
-    super(_, v, o).f = true;
+    super(_, v, o, true);
     this.i = 0;         // index
     this.a = !!o.async; // async
     this.m = true;      // microtask

@@ -2,7 +2,7 @@ import * as usignal from '../esm/index.js';
 
 const report = {};
 
-testUsignal(report, 4000);
+testUsignal(report, 4829);
 
 console.table(report);
 
