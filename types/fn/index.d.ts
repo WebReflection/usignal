@@ -1,4 +1,4 @@
-export * from "../index.d.ts";
+export * from "../index.js";
 /**
  * Returns a callback that is invoked only when any of the internally
  * used signals, as in within the callback, is unknown or updated.

@@ -79,8 +79,7 @@ const compute = ({c}) => {
   }
 };
 
-let computedSignals;
-let realtedSignals;
+let computedSignal;
 const clear = self => {
   for (const signal of self.r)
     signal.c.delete(self);
@@ -98,11 +97,9 @@ class Computed extends Signal {
   }
   /** @readonly */
   get value() {
-    const cs = computedSignals;
-    const rs = realtedSignals;
+    const prev = computedSignal;
     try {
-      computedSignals = this;
-      realtedSignals = this.r;
+      computedSignal = this;
       if (!this.s)
         this.s = new Reactive(this._(this.v), this.v = this.o);
       else if (this.$) {
@@ -112,8 +109,7 @@ class Computed extends Signal {
     }
     finally {
       this.$ = false;
-      computedSignals = cs;
-      realtedSignals = rs;
+      computedSignal = prev;
     }
     return this.s.value;
   }
@@ -221,9 +217,9 @@ class Reactive extends Signal {
   }
   peek() { return this._ }
   get value() {
-    if (computedSignals) {
-      this.c.add(computedSignals);
-      realtedSignals.add(this);
+    if (computedSignal) {
+      this.c.add(computedSignal);
+      computedSignal.r.add(this);
     }
     return this._;
   }

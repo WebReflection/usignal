@@ -1,4 +1,4 @@
-export * from "./index.d.ts";
+export * from "./index.js";
 /**
  * asynchronous https://www.solidjs.com/docs/latest/api#createeffect
  *

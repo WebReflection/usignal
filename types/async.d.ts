@@ -1,4 +1,4 @@
-export * from "./index.d.ts";
+export * from "./index.js";
 /**
  * Invokes asynchronously a function when any of its internal signals or computed values change.
  *
