@@ -9,6 +9,6 @@
       "declarationDir": "types"
   },
   "include": [
-    "esm/*.js"
+    "esm/**/*.js"
   ]
 }

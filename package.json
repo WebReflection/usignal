@@ -10,8 +10,9 @@
     "test": "c8 node --expose-gc test/index.js $@",
     "size": "cat es.js | brotli | wc -c",
     "leak": "node --expose-gc ./test/leak.js $@",
-    "types": "tsc -p . && npm run fix:types",
+    "types": "tsc -p . && npm run fix:types && npm run fix:exports",
     "fix:types": "sed -i \"s/_: T;/value: T;/\" types/index.d.ts",
+    "fix:exports": "sed -i \"s/\\.js/.d.ts/\" types/{async,sync}.d.ts; sed -i \"s/\\.js/.d.ts/\" types/solid/{async,sync}.d.ts; sed -i \"s/\\.js/.d.ts/\" types/fn/{index,async,sync}.d.ts",
     "readme-size": "sed -i \"s/, \\([0-9]\\+\\) bytes/, $(cat es.js | brotli | wc -c) bytes/\" README.md",
     "coverage": "mkdir -p ./coverage; c8 report --reporter=text-lcov > ./coverage/lcov.info"
   },
@@ -35,66 +36,84 @@
   "exports": {
     ".": {
       "browser": {
-        "types": "./types/esm/async.d.ts",
+        "types": "./types/async.d.ts",
         "import": "./esm/async.js",
         "default": "./cjs/async.js"
       },
       "default": {
-        "types": "./types/esm/sync.d.ts",
-        "import": "./esm/index.js",
-        "default": "./cjs/index.js"
+        "types": "./types/sync.d.ts",
+        "import": "./esm/sync.js",
+        "default": "./cjs/sync.js"
       }
+    },
+    "./core": {
+      "types": "./types/index.d.ts",
+      "import": "./esm/index.js",
+      "default": "./cjs/index.js"
+    },
+    "./sync": {
+      "types": "./types/sync.d.ts",
+      "import": "./esm/sync.js",
+      "default": "./cjs/sync.js"
+    },
+    "./async": {
+      "types": "./types/async.d.ts",
+      "import": "./esm/async.js",
+      "default": "./cjs/async.js"
     },
     "./fn": {
       "browser": {
+        "types": "./types/fn/async.d.ts",
         "import": "./esm/fn/async.js",
         "default": "./cjs/fn/async.js"
       },
       "default": {
-        "import": "./esm/fn/index.js",
-        "default": "./cjs/fn/index.js"
+        "types": "./types/fn/sync.d.ts",
+        "import": "./esm/fn/sync.js",
+        "default": "./cjs/fn/sync.js"
       }
     },
+    "./fn/core": {
+      "types": "./types/fn/index.d.ts",
+      "import": "./esm/fn/index.js",
+      "default": "./cjs/fn/index.js"
+    },
     "./fn/async": {
+      "types": "./types/fn/async.d.ts",
       "import": "./esm/fn/async.js",
       "default": "./cjs/fn/async.js"
     },
     "./fn/sync": {
+      "types": "./types/fn/sync.d.ts",
       "import": "./esm/fn/sync.js",
       "default": "./cjs/fn/sync.js"
     },
     "./solid": {
       "browser": {
+        "types": "./types/solid/async.d.ts",
         "import": "./esm/solid/async.js",
         "default": "./cjs/solid/async.js"
       },
       "default": {
-        "import": "./esm/solid/index.js",
-        "default": "./cjs/solid/index.js"
+        "types": "./types/solid/sync.d.ts",
+        "import": "./esm/solid/sync.js",
+        "default": "./cjs/solid/sync.js"
       }
     },
+    "./solid/core": {
+      "types": "./types/solid/index.d.ts",
+      "import": "./esm/solid/index.js",
+      "default": "./cjs/solid/index.js"
+    },
     "./solid/async": {
+      "types": "./types/solid/async.d.ts",
       "import": "./esm/solid/async.js",
       "default": "./cjs/solid/async.js"
     },
     "./solid/sync": {
+      "types": "./types/solid/sync.d.ts",
       "import": "./esm/solid/sync.js",
       "default": "./cjs/solid/sync.js"
-    },
-    "./core": {
-      "types": "./types/esm/index.d.ts",
-      "import": "./esm/index.js",
-      "default": "./cjs/index.js"
-    },
-    "./sync": {
-      "types": "./types/esm/sync.d.ts",
-      "import": "./esm/sync.js",
-      "default": "./cjs/sync.js"
-    },
-    "./async": {
-      "types": "./types/esm/async.d.ts",
-      "import": "./esm/async.js",
-      "default": "./cjs/async.js"
     },
     "./package.json": "./package.json"
   },

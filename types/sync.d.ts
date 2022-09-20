@@ -1,4 +1,4 @@
-export * from "./index.js";
+export * from "./index.d.ts";
 /**
  * Invokes synchronously a function when any of its internal signals or computed values change.
  *

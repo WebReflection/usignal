@@ -125,7 +125,7 @@ const defaults = {async: false, equals: true};
  * Returns a read-only Signal that is invoked only when any of the internally
  * used signals, as in within the callback, is unknown or updated.
  * @template T
- * @type {<T>(fn: (v: T) => T, value?: T, options?: { equals?: false | ((prev: T, next: T) => boolean) }) => Signal<T>}
+ * @type {<T>(fn: (v: T) => T, value?: T, options?: { equals?: boolean | ((prev: T, next: T) => boolean) }) => Signal<T>}
  */
 export const computed = (fn, value, options = defaults) =>
                           new Computed(fn, value, options);
@@ -187,10 +187,10 @@ class Effect extends Computed {
 
 /**
  * Invokes a function when any of its internal signals or computed values change.
- * @param {() => void} callback the function to re-invoke on changes.
- * @param {T} [value] a value to pass along a sargument and previously returned value
- * @param {boolean} [options=false] specify an asynchronous effect instead
- * @returns {() => void} a callback to stop/dispose the effect
+ * 
+ * Returns a dispose callback.
+ * @template T
+ * @type {<T>(fn: (v: T) => T, value?: T, options?: { async?: boolean }) => void}
  */
 export const effect = (callback, value, options = defaults) => {
   let unique;
@@ -238,8 +238,6 @@ class Reactive extends Signal {
 /**
  * Returns a writable Signal that side-effects whenever its value gets updated.
  * @template T
- * @param {T} value the value the Signal should carry along
- * @param {{equals?: false | ((prev: T, next: T) => boolean)}} [options] signal options
- * @returns {Signal<T>}
+ * @type {<T>(initialValue: T, options?: { equals?: boolean | ((prev: T, next: T) => boolean) }) => Signal<T>}
  */
 export const signal = (value, options = defaults) => new Reactive(value, options);

@@ -13,7 +13,7 @@ exports.createEffect = createEffect;
 
 /**
  * @template T
- * @type {<T>(fn: (v: T) => T, value?: T, options?: { equals?: false | ((prev: T, next: T) => boolean) }) => () => T}
+ * @type {<T>(fn: (v: T) => T, value?: T, options?: { equals?: boolean | ((prev: T, next: T) => boolean) }) => () => T}
  */
 const createMemo = (fn, value, options) => {
   const _ = computed(fn, value, options);
@@ -23,7 +23,7 @@ exports.createMemo = createMemo;
 
 /**
  * @template T
- * @type {<T>(initialValue: T, options?: { equals?: false | ((prev: T, next: T) => boolean) }) => [get: () => T, set: (v: T) => T]}
+ * @type {<T>(initialValue: T, options?: { equals?: boolean | ((prev: T, next: T) => boolean) }) => [get: () => T, set: (v: T) => T]}
  */
 const createSignal = (initialValue, options) => {
   const _ = signal(asValue(initialValue), options);

@@ -8,7 +8,7 @@ const {prototype} = Signal;
  * Returns a callback that is invoked only when any of the internally
  * used signals, as in within the callback, is unknown or updated.
  * @template T
- * @type {<T>(fn: (v: T) => T, value?: T, options?: { equals?: false | ((prev: T, next: T) => boolean) }) => () => T}
+ * @type {<T>(fn: (v: T) => T, value?: T, options?: { equals?: boolean | ((prev: T, next: T) => boolean) }) => () => T}
  */
 export const computed = (fn, value, options) => {
   const _ = c(fn, value, options);
@@ -23,7 +23,7 @@ export const computed = (fn, value, options) => {
  * otherwise it updates the signal value and returns its new value.
  * @template T
  * @param {T} value the value the Signal should carry along
- * @param {{equals?: false | ((prev: T, next: T) => boolean)}} [options] signal options
+ * @param {{equals?: boolean | ((prev: T, next: T) => boolean)}} [options] signal options
  * @returns {(value?: T) => T}
  */
 export const signal = (value, options) => {
