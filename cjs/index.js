@@ -56,30 +56,19 @@ const update = ({e}) => {
   }
 };
 
-let effects;
-const compute = signal => {
-  if (signal.c.size) {
-    const prev = effects;
-    effects = prev || [];
-    for (const computed of signal.c) {
-      if (!computed.$ && computed.r.has(signal)) {
-        computed.$ = true;
-        if (computed.f) {
-          effects.push(computed);
-          update(computed);
-        }
-        else
-          compute(computed.s);
+const compute = (signal, effects) => {
+  for (const computed of signal.c) {
+    if (!computed.$ && computed.r.has(signal)) {
+      computed.$ = true;
+      if (computed.f) {
+        effects.push(computed);
+        update(computed);
       }
+      else
+        compute(computed.s, effects);
     }
-    try {
-      if (!prev) {
-        for (const effect of effects)
-          batches ? batches.push(() => { effect.value }) : effect.value;
-      }
-    }
-    finally { effects = prev }
   }
+  return effects;
 };
 
 let computedSignal;
@@ -225,7 +214,8 @@ class Reactive extends Signal {
   set value(_) {
     if (!this.s(this._, _)) {
       this._ = _;
-      compute(this);
+      for (const effect of compute(this, []))
+        batches ? batches.push(() => { effect.value }) : effect.value;
     }
   }
 }

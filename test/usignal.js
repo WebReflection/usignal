@@ -1,6 +1,8 @@
 import './leak.js';
 import * as usignal from '../esm/index.js';
 
+const library = 'usignal';
+
 const assert = (what, why) => {
   console.assert(what);
   if (!what)
