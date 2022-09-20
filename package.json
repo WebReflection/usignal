@@ -2,6 +2,7 @@
   "name": "usignal",
   "version": "0.7.2",
   "main": "./cjs/index.js",
+  "types": "./types/index.d.ts",
   "scripts": {
     "build": "npm run cjs && npm run rollup:es && npm run types && npm run readme-size && npm run test && npm run size",
     "cjs": "ascjs esm cjs",
