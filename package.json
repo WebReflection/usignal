@@ -1,6 +1,6 @@
 {
   "name": "usignal",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "main": "./cjs/index.js",
   "types": "./types/index.d.ts",
   "scripts": {
