@@ -10,7 +10,7 @@
     "test": "c8 node --expose-gc test/index.js $@",
     "size": "cat es.js | brotli | wc -c",
     "leak": "node --expose-gc ./test/leak.js $@",
-    "types": "tsc -p . && npm run fix:types && npm run fix:exports",
+    "types": "tsc -p . && npm run fix:types",
     "fix:types": "sed -i \"s/_: T;/value: T;/\" types/index.d.ts",
     "fix:exports": "sed -i \"s/\\.js/.d.ts/\" types/{async,sync}.d.ts; sed -i \"s/\\.js/.d.ts/\" types/solid/{async,sync}.d.ts; sed -i \"s/\\.js/.d.ts/\" types/fn/{index,async,sync}.d.ts",
     "readme-size": "sed -i \"s/, \\([0-9]\\+\\) bytes/, $(cat es.js | brotli | wc -c) bytes/\" README.md",
