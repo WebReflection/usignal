@@ -194,11 +194,11 @@ class Reactive extends Signal {
             computed.$ = true;
             if (computed.f) {
               effects.push(computed);
-              const stack = [computed.e];
-              for (const e of stack) {
-                for (const effect of e) {
+              const stack = [computed];
+              for (const c of stack) {
+                for (const effect of c.e) {
                   effect.$ = true;
-                  stack.push(effect.e);
+                  stack.push(effect);
                 }
               }
             }
