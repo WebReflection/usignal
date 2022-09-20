@@ -49,6 +49,7 @@ class Signal {
 }
 exports.Signal = Signal
 
+let tracking = true;
 let computedSignal;
 class Computed extends Signal {
   constructor(_, v, o, f) {
@@ -61,13 +62,20 @@ class Computed extends Signal {
   /** @readonly */
   get value() {
     if (this.$) {
-      const prev = computedSignal;
-      computedSignal = this;
-      this.r.clear();
-      try { this.s.value = this._(this.s._) }
-      finally {
+      if (tracking) {
+        const prev = computedSignal;
+        computedSignal = this;
+        this.r.clear();
+        try { this.s.value = this._(this.s._) }
+        finally {
+          this.$ = false;
+          computedSignal = prev;
+        }
+      }
+      else {
         this.$ = false;
-        computedSignal = prev;
+        try { this.s._ = this._(this.s._) }
+        finally { this.$ = false }
       }
     }
     return this.s.value;
@@ -185,6 +193,7 @@ class Reactive extends Signal {
     if (!this.s(this._, _)) {
       this._ = _;
       const effects = [];
+      const computeds = [];
       const stack = [this];
       for (const signal of stack) {
         for (const computed of signal.c) {
@@ -200,11 +209,17 @@ class Reactive extends Signal {
                 }
               }
             }
-            else
+            else {
               stack.push(computed.s);
+              computeds.push(computed);
+            }
           }
         }
       }
+      const prev = tracking;
+      tracking = false;
+      for (const {value} of computeds);
+      tracking = prev;
       for (const effect of effects)
         batches ? batches.push(() => { effect.value }) : effect.value;
     }
