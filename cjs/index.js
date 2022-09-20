@@ -57,12 +57,12 @@ const update = ({e}) => {
 };
 
 let effects;
-const compute = ({c}) => {
-  if (c.size) {
+const compute = signal => {
+  if (signal.c.size) {
     const prev = effects;
     effects = prev || [];
-    for (const computed of c) {
-      if (!computed.$) {
+    for (const computed of signal.c) {
+      if (!computed.$ && computed.r.has(signal)) {
         computed.$ = true;
         if (computed.f) {
           effects.push(computed);
@@ -83,11 +83,6 @@ const compute = ({c}) => {
 };
 
 let computedSignal;
-const clear = self => {
-  for (const signal of self.r)
-    signal.c.delete(self);
-  self.r.clear();
-};
 class Computed extends Signal {
   constructor(_, v, o) {
     super(_);
@@ -106,7 +101,7 @@ class Computed extends Signal {
       if (!this.s)
         this.s = new Reactive(this._(this.v), this.v = this.o);
       else if (this.$) {
-        clear(this);
+        this.r.clear();
         this.s.value = this._(this.s._);
       }
     }
@@ -175,9 +170,8 @@ class Effect extends Computed {
   }
   stop() {
     if (this.s) {
-      clear(this);
+      this.r.clear();
       this.s.c.clear();
-      this.s = this.r = null;
     }
     this._ = noop;
     if (this.e.length)
