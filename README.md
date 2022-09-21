@@ -86,9 +86,16 @@ Addictionally, *usignal* has also a `toJSON` helper to serialize out of the box 
 
 ---
 
-### TODO
 
-- [ ] find out some good benchmark to test against *preact/signals-core* and *solid-js* to see if there's room for some improvement
+## Benchmark
+
+The benchmark currently compares *S*, *solid*, *preact/signals*, and *cellx* against *usignal*.
+
+```sh
+npm run benchmark
+```
+
+![current status](./test/benchmark.png)
 
 
 ## Tests
