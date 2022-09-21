@@ -60,13 +60,13 @@ class Computed extends Signal {
   /** @readonly */
   get value() {
     if (this.$) {
-      const prev = computedSignal;
-      computedSignal = this;
-      this.r.clear();
+      // const prev = computedSignal;
+      // computedSignal = this;
+      // this.r.clear();
       try { this.s.value = this._(this.s._) }
       finally {
         this.$ = false;
-        computedSignal = prev;
+        // computedSignal = prev;
       }
     }
     return this.s.value;
@@ -183,29 +183,31 @@ class Reactive extends Signal {
   set value(_) {
     if (!this.s(this._, _)) {
       this._ = _;
-      const effects = [];
-      const stack = [this];
-      for (const signal of stack) {
-        for (const computed of signal.c) {
-          if (!computed.$ && computed.r.has(signal)) {
-            computed.$ = true;
-            if (computed.f) {
-              effects.push(computed);
-              const stack = [computed];
-              for (const c of stack) {
-                for (const effect of c.e) {
-                  effect.$ = true;
-                  stack.push(effect);
+      if (this.c.size) {
+        const effects = [];
+        const stack = [this];
+        for (const signal of stack) {
+          for (const computed of signal.c) {
+            if (!computed.$ && computed.r.has(signal)) {
+              computed.$ = true;
+              if (computed.f) {
+                effects.push(computed);
+                const stack = [computed];
+                for (const c of stack) {
+                  for (const effect of c.e) {
+                    effect.$ = true;
+                    stack.push(effect);
+                  }
                 }
               }
+              else
+                stack.push(computed.s);
             }
-            else
-              stack.push(computed.s);
           }
         }
+        for (const effect of effects)
+          batches ? batches.push(effect) : effect.value;
       }
-      for (const effect of effects)
-        batches ? batches.push(effect) : effect.value;
     }
   }
 }
