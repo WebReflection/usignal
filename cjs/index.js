@@ -54,6 +54,7 @@ class Computed extends Signal {
     super(_);
     this.f = f;                   // is effect?
     this.$ = true;                // should update ("value for money")
+    this.t = !o.untrack;          // tracking
     this.r = new Set;             // related signals
     this.s = new Reactive(v, o);  // signal
   }
@@ -61,8 +62,10 @@ class Computed extends Signal {
   get value() {
     if (this.$) {
       const prev = computedSignal;
-      computedSignal = this;
-      this.r.clear();
+      if (this.t) {
+        computedSignal = this;
+        this.r.clear();
+      }
       try { this.s.value = this._(this.s._) }
       finally {
         this.$ = false;
@@ -73,13 +76,13 @@ class Computed extends Signal {
   }
 }
 
-const defaults = {async: false, equals: true};
+const defaults = {async: false, equals: true, untrack: false};
 
 /**
  * Returns a read-only Signal that is invoked only when any of the internally
  * used signals, as in within the callback, is unknown or updated.
  * @template T
- * @type {<T>(fn: (v: T) => T, value?: T, options?: { equals?: boolean | ((prev: T, next: T) => boolean) }) => Signal<T>}
+ * @type {<T>(fn: (v: T) => T, value?: T, options?: { equals?: boolean | ((prev: T, next: T) => boolean), untrack?: boolean }) => Signal<T>}
  */
 const computed = (fn, value, options = defaults) =>
                           new Computed(fn, value, options, false);
@@ -142,7 +145,7 @@ class Effect extends Computed {
  * 
  * Returns a dispose callback.
  * @template T
- * @type {<T>(fn: (v: T) => T, value?: T, options?: { async?: boolean }) => void}
+ * @type {<T>(fn: (v: T) => T, value?: T, options?: { async?: boolean, untrack?: boolean }) => void}
  */
 const effect = (callback, value, options = defaults) => {
   let unique;

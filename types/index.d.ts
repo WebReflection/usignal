@@ -21,20 +21,22 @@ export class Signal<T> {
  * Returns a read-only Signal that is invoked only when any of the internally
  * used signals, as in within the callback, is unknown or updated.
  * @template T
- * @type {<T>(fn: (v: T) => T, value?: T, options?: { equals?: boolean | ((prev: T, next: T) => boolean) }) => Signal<T>}
+ * @type {<T>(fn: (v: T) => T, value?: T, options?: { equals?: boolean | ((prev: T, next: T) => boolean), untrack?: boolean }) => Signal<T>}
  */
 export const computed: <T>(fn: (v: T) => T, value?: T, options?: {
     equals?: boolean | ((prev: T, next: T) => boolean);
+    untrack?: boolean;
 }) => Signal<T>;
 /**
  * Invokes a function when any of its internal signals or computed values change.
  *
  * Returns a dispose callback.
  * @template T
- * @type {<T>(fn: (v: T) => T, value?: T, options?: { async?: boolean }) => void}
+ * @type {<T>(fn: (v: T) => T, value?: T, options?: { async?: boolean, untrack?: boolean }) => void}
  */
 export const effect: <T>(fn: (v: T) => T, value?: T, options?: {
     async?: boolean;
+    untrack?: boolean;
 }) => void;
 /**
  * Returns a writable Signal that side-effects whenever its value gets updated.

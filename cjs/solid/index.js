@@ -6,14 +6,14 @@ const asValue = value => typeof value === 'function' ? value() : value;
 /**
  * https://www.solidjs.com/docs/latest/api#createeffect
  * @template T
- * @type {<T>(fn: (v: T) => T, value?: T, options?: { async?: boolean }) => void}
+ * @type {<T>(fn: (v: T) => T, value?: T, options?: { async?: boolean, untrack?: boolean }) => void}
  */
 const createEffect = effect;
 exports.createEffect = createEffect;
 
 /**
  * @template T
- * @type {<T>(fn: (v: T) => T, value?: T, options?: { equals?: boolean | ((prev: T, next: T) => boolean) }) => () => T}
+ * @type {<T>(fn: (v: T) => T, value?: T, options?: { equals?: boolean | ((prev: T, next: T) => boolean), untrack?: boolean }) => () => T}
  */
 const createMemo = (fn, value, options) => {
   const _ = computed(fn, value, options);

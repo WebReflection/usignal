@@ -5,13 +5,13 @@ const asValue = value => typeof value === 'function' ? value() : value;
 /**
  * https://www.solidjs.com/docs/latest/api#createeffect
  * @template T
- * @type {<T>(fn: (v: T) => T, value?: T, options?: { async?: boolean }) => void}
+ * @type {<T>(fn: (v: T) => T, value?: T, options?: { async?: boolean, untrack?: boolean }) => void}
  */
 export const createEffect = effect;
 
 /**
  * @template T
- * @type {<T>(fn: (v: T) => T, value?: T, options?: { equals?: boolean | ((prev: T, next: T) => boolean) }) => () => T}
+ * @type {<T>(fn: (v: T) => T, value?: T, options?: { equals?: boolean | ((prev: T, next: T) => boolean), untrack?: boolean }) => () => T}
  */
 export const createMemo = (fn, value, options) => {
   const _ = computed(fn, value, options);
