@@ -59,7 +59,6 @@ class Computed extends Signal {
     if (this.$) {
       const prev = computedSignal;
       computedSignal = this;
-      this.r.clear();
       try { this.s.value = this._(this.s._) }
       finally {
         this.$ = false;
@@ -184,6 +183,7 @@ class Reactive extends Signal {
         for (const signal of stack) {
           for (const computed of signal.c) {
             if (!computed.$ && computed.r.has(signal)) {
+              computed.r.clear();
               computed.$ = true;
               if (computed.f) {
                 effects.push(computed);
