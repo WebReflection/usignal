@@ -48,7 +48,7 @@ class Signal {
 }
 exports.Signal = Signal
 
-let computedSignal;
+let computedSignal = [];
 class Computed extends Signal {
   constructor(_, v, o, f) {
     super(_);
@@ -60,12 +60,11 @@ class Computed extends Signal {
   /** @readonly */
   get value() {
     if (this.$) {
-      const prev = computedSignal;
-      computedSignal = this;
+      computedSignal.push(this);
       try { this.s.value = this._(this.s._) }
       finally {
         this.$ = false;
-        computedSignal = prev;
+        computedSignal.pop();
       }
     }
     return this.s.value;
@@ -84,7 +83,7 @@ const computed = (fn, value, options = defaults) =>
                           new Computed(fn, value, options, false);
 exports.computed = computed;
 
-let outerEffect;
+let outerEffect = [];
 const noop = () => {};
 const stop = e => {
   for (const effect of e)
@@ -112,8 +111,7 @@ class Effect extends Computed {
     }
   }
   sync() {
-    const prev = outerEffect;
-    outerEffect = this;
+    outerEffect.push(this);
     this.i = 0;
     const {length} = this.e;
     super.value;
@@ -125,7 +123,7 @@ class Effect extends Computed {
     if (this.i < length)
       stop(this.e.splice(this.i));
     for (const {value} of this.e);
-    outerEffect = prev;
+    outerEffect.pop();
   }
   stop() {
     this._ = noop;
@@ -145,8 +143,10 @@ class Effect extends Computed {
  */
 const effect = (callback, value, options = defaults) => {
   let unique;
-  if (outerEffect) {
-    const {i, e} = outerEffect;
+  const {length} = outerEffect;
+  if (length) {
+    const effect = outerEffect[length - 1];
+    const {i, e} = effect;
     // bottleneck:
     // there's literally no way to optimize this path *unless* the callback is
     // already a known one. however, latter case is not really common code so
@@ -156,7 +156,7 @@ const effect = (callback, value, options = defaults) => {
     if (i === e.length || e[i]._ !== callback)
       e[i] = new Effect(callback, value, options);
     unique = e[i];
-    outerEffect.i++;
+    effect.i++;
   }
   else
     (unique = new Effect(callback, value, options)).value;
@@ -173,9 +173,11 @@ class Reactive extends Signal {
   }
   peek() { return this._ }
   get value() {
-    if (computedSignal) {
-      this.c.add(computedSignal);
-      computedSignal.r.add(this);
+    const {length} = computedSignal;
+    if (length) {
+      const computed = computedSignal[length - 1];
+      this.c.add(computed);
+      computed.r.add(this);
     }
     return this._;
   }
