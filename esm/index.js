@@ -51,7 +51,7 @@ class Computed extends Signal {
     super(_);
     this.f = f;                   // is effect?
     this.$ = true;                // should update ("value for money")
-    this.r = new Set;             // related signals
+    this.r = null;                // related signals
     this.s = new Reactive(v, o);  // signal
   }
   /** @readonly */
@@ -59,7 +59,7 @@ class Computed extends Signal {
     if (this.$) {
       const prev = computedSignal;
       computedSignal = this;
-      this.r.clear();
+      this.r = [];
       try { this.s.value = this._(this.s._) }
       finally {
         this.$ = false;
@@ -126,7 +126,7 @@ class Effect extends Computed {
   }
   stop() {
     this._ = noop;
-    this.r.clear();
+    this.r = [];
     this.s.c.clear();
     if (this.e.length)
       stop(this.e.splice(0));
@@ -171,7 +171,7 @@ class Reactive extends Signal {
   get value() {
     if (computedSignal) {
       this.c.add(computedSignal);
-      computedSignal.r.add(this);
+      computedSignal.r.push(this);
     }
     return this._;
   }
@@ -183,7 +183,7 @@ class Reactive extends Signal {
         const stack = [this];
         for (const signal of stack) {
           for (const computed of signal.c) {
-            if (!computed.$ && computed.r.has(signal)) {
+            if (!computed.$ && computed.r.includes(signal)) {
               computed.$ = true;
               if (computed.f) {
                 effects.push(computed);
