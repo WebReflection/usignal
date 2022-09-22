@@ -86,10 +86,6 @@ exports.computed = computed;
 
 let outerEffect;
 const noop = () => {};
-const stop = e => {
-  for (const effect of e)
-    effect.stop();
-};
 class Effect extends Computed {
   constructor(_, v, o) {
     super(_, v, o, true);
@@ -113,26 +109,26 @@ class Effect extends Computed {
   }
   sync() {
     const prev = outerEffect;
-    outerEffect = this;
+    const {e} = (outerEffect = this);
     this.i = 0;
-    const {length} = this.e;
     super.value;
     // if effects are present in loops, these can grow or shrink.
     // when these grow, there's nothing to do, as well as when these are
     // still part of the loop, as the callback gets updated anyway.
     // however, if there were more effects before but none now, those can
     // just stop being referenced and go with the GC.
-    if (this.i < length)
-      stop(this.e.splice(this.i));
-    for (const {value} of this.e);
+    if (this.i < e.length)
+      for (const effect of e.splice(this.i))
+        effect.stop();
+    for (const {value} of e);
     outerEffect = prev;
   }
   stop() {
     this._ = noop;
     this.r.clear();
     this.s.c.clear();
-    if (this.e.length)
-      stop(this.e.splice(0));
+    for (const effect of this.e.splice(0))
+      effect.stop();
   }
 }
 
