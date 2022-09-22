@@ -35,7 +35,7 @@ export const computed: <T>(fn: (v: T) => T, value?: T, options?: {
  */
 export const effect: <T>(fn: (v: T) => T, value?: T, options?: {
     async?: boolean;
-}) => void;
+}) => () => void;
 /**
  * Returns a writable Signal that side-effects whenever its value gets updated.
  * @template T
