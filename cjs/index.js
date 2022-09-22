@@ -142,7 +142,7 @@ class Effect extends Computed {
  * 
  * Returns a dispose callback.
  * @template T
- * @type {<T>(fn: (v: T) => T, value?: T, options?: { async?: boolean }) => void}
+ * @type {<T>(fn: (v: T) => T, value?: T, options?: { async?: boolean }) => () => void}
  */
 const effect = (callback, value, options = defaults) => {
   let unique;

@@ -4,8 +4,10 @@ const asValue = value => typeof value === 'function' ? value() : value;
 
 /**
  * https://www.solidjs.com/docs/latest/api#createeffect
+ *
+ * returns a dispose callback.
  * @template T
- * @type {<T>(fn: (v: T) => T, value?: T, options?: { async?: boolean }) => void}
+ * @type {<T>(fn: (v: T) => T, value?: T, options?: { async?: boolean }) => () => void}
  */
 export const createEffect = effect;
 

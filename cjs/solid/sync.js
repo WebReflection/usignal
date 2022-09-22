@@ -7,7 +7,7 @@ const options = {async: false};
 
 /**
  * synchronous https://www.solidjs.com/docs/latest/api#createeffect
- * 
+ *
  * returns a dispose callback.
  * @template T
  * @type {<T>(fn: (v?: T) => T?, value?: T) => () => void 0}

@@ -1,11 +1,13 @@
 /**
  * https://www.solidjs.com/docs/latest/api#createeffect
+ *
+ * returns a dispose callback.
  * @template T
- * @type {<T>(fn: (v: T) => T, value?: T, options?: { async?: boolean }) => void}
+ * @type {<T>(fn: (v: T) => T, value?: T, options?: { async?: boolean }) => () => void}
  */
 export const createEffect: <T_1>(fn: (v: T_1) => T_1, value?: T_1, options?: {
     async?: boolean;
-}) => void;
+}) => () => void;
 /**
  * @template T
  * @type {<T>(fn: (v: T) => T, value?: T, options?: { equals?: boolean | ((prev: T, next: T) => boolean) }) => () => T}
