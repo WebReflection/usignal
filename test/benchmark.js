@@ -22,18 +22,23 @@
  
  const SOLUTIONS = {
    10: [2, 4, -2, -3],
-   100: [-2, -4, 2, 3],
+   100: [2, 2, 4, 2],
    500: [-2, 1, -4, -4],
-   1000: [-2, -4, 2, 3],
+   1000: [2, 2, 4, 2],
    2000: [-2, 1, -4, -4],
-   2500: [-2, -4, 2, 3],
+   2500: [2, 2, 4, 2],
  };
+
+ let rand = 0;
  
  /**
   * @param {number} layers
   * @param {number[]} answer
   */
- const isSolution = (layers, answer) => answer.every((_, i) => SOLUTIONS[layers][i]);
+ const isSolution = (layers, answer) => answer.every((_, i) => {
+  // if (SOLUTIONS[layers][i] !== _) console.log(layers, i, SOLUTIONS[layers][i], _);
+  return SOLUTIONS[layers][i] === _;
+ });
  
  async function main() {
    const report = {
@@ -52,7 +57,7 @@
      for (let i = 0; i < LAYER_TIERS.length; i += 1) {
        let layers = LAYER_TIERS[i];
        const runs = [];
- 
+       rand++;
        for (let j = 0; j < RUNS_PER_TIER; j += 1) {
          runs.push(await start(current.fn, layers));
        }
@@ -126,7 +131,7 @@
      for (let i = layers; i--; ) {
        layer = ((m) => {
          const props = {
-           a: S(() => m.b()),
+           a: S(() => rand % 2 ? m.b() : m.c()),
            b: S(() => m.a() - m.c()),
            c: S(() => m.b() + m.d()),
            d: S(() => m.c()),
@@ -169,7 +174,7 @@
      for (let i = layers; i--; ) {
        layer = ((m) => {
          const props = {
-           a: solid.createMemo(() => m.b()),
+           a: solid.createMemo(() => rand % 2 ? m.b() : m.c()),
            b: solid.createMemo(() => m.a() - m.c()),
            c: solid.createMemo(() => m.b() + m.d()),
            d: solid.createMemo(() => m.c()),
@@ -211,7 +216,7 @@
    for (let i = layers; i--; ) {
      layer = ((m) => {
        const props = {
-         a: preact.computed(() => m.b.value),
+         a: preact.computed(() => rand % 2 ? m.b.value : m.c.value),
          b: preact.computed(() => m.a.value - m.c.value),
          c: preact.computed(() => m.b.value + m.d.value),
          d: preact.computed(() => m.c.value),
@@ -251,7 +256,7 @@
    for (let i = layers; i--; ) {
      layer = ((m) => {
        const props = {
-         a: new cellx.Cell(() => m.b.get()),
+         a: new cellx.Cell(() => rand % 2 ? m.b.get() : m.c.get()),
          b: new cellx.Cell(() => m.a.get() - m.c.get()),
          c: new cellx.Cell(() => m.b.get() + m.d.get()),
          d: new cellx.Cell(() => m.c.get()),
@@ -301,7 +306,7 @@
     for (let i = layers; i--; ) {
       layer = ((m) => {
         const props = {
-          a: usignal.computed(() => m.b.value),
+          a: usignal.computed(() => rand % 2 ? m.b.value : m.c.value),
           b: usignal.computed(() => m.a.value - m.c.value),
           c: usignal.computed(() => m.b.value + m.d.value),
           d: usignal.computed(() => m.c.value),
