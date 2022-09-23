@@ -91,6 +91,8 @@ Addictionally, *usignal* has also a `toJSON` helper to serialize out of the box 
 
 The benchmark currently compares *S*, *solid*, *preact/signals*, and *cellx* against *usignal*.
 
+Please note *preact* is currently not able to solve nested effects so its logic might be simpler than other libraries.
+
 ```sh
 npm run benchmark
 ```
@@ -103,6 +105,8 @@ npm run benchmark
 This module is 100% code covered, including ~~the *WeakRef*~~ possible leaks which is tested through the [test/leak.js](./test/leak.js) file, which is part of the *build* script process.
 
 To use other libraries as reference, I have also added *preact/signals-core* and *solid-js* dev-dependencies within the test folder.
+
+Please note *preact* is currently not able to solve nested effects so its logic might be simpler than other libraries.
 
 The following instructions are needed to test other libraries too:
 

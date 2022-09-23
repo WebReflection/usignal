@@ -225,10 +225,10 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
     assert(fullName.value === 'Jane Doe', 'computed not working');
     assert(invokes === 1, 'computed value should have been invoked once');
     name.value = 'John';
-    if (/^(?:usignal)$/.test(library)) fullName.value;
+    if (/^(?:usignal|@preact\/signals-core)$/.test(library)) fullName.value;
     assert(invokes === 2, 'computed value should have been invoked again');
     name.value = 'John';
-    if (/^(?:usignal)$/.test(library)) fullName.value;
+    if (/^(?:usignal|@preact\/signals-core)$/.test(library)) fullName.value;
     assert(invokes === 2, 'computed value should NOT have been invoked again');
   }
 
@@ -325,8 +325,10 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
     loop = 1;
     num.value = 1;
 
-    assert(invokes.length === 2, 'looped effects not working after changes');
-    assert(invokes.join(',') === '1,1', 'looped values not matching after changes');
+    if (!/^(?:@preact\/signals-core)$/.test(library)) {
+      assert(invokes.length === 2, 'looped effects not working after changes');
+      assert(invokes.join(',') === '1,1', 'looped values not matching after changes');
+    }
   }
 
   // check different output in preact/usignal/solid
