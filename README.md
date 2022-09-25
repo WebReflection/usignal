@@ -70,7 +70,7 @@ To allow developers to tray and use different patterns there are a few variants 
 
   * both *signal* and *computed* also return a *thenable* instance that can be used to `await signal` or `await computed` without needing to use `await signal.value` or `await computed.value` out of [this poll](https://twitter.com/WebReflection/status/1571400086902476801).
 
-Last, but not least, I was expecting from libraries that inspired this module is the ability to implicitly have signals values:
+  * both *signal* and *computed* also have a `toJSON` helper abd a `valueOf()` able to implicitly use their values, e.g.
 
 ```js
 const one = signal(1);
@@ -79,10 +79,6 @@ const three = computed(() => one + two);
 
 three.value;  // 3 indeed!
 ```
-
-It's cool that other libaries use `toString` to simplify common string case integration, mostly with the DOM node, but it should also be welcomed a `valueOf` implementation, like *usignal* has, so that numeric values can actually be used as if they are, actually, numbers.
-
-Addictionally, *usignal* has also a `toJSON` helper to serialize out of the box their value.
 
 ---
 
