@@ -38,6 +38,7 @@ export class Signal {
   /** @returns {T} */
   toJSON() { return this.value }
 
+  // TODO: this should be String(this.value) whenever anyone complains
   /** @returns {T} */
   toString() { return this.value }
 
