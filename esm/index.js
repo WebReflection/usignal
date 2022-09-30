@@ -171,8 +171,8 @@ class Reactive extends Signal {
     return this._;
   }
   set value(_) {
-    if (!this.s(this._, _)) {
-      this._ = _;
+    const prev = this._;
+    if (!this.s((this._ = _), prev)) {
       if (this.c.size) {
         const effects = [];
         const stack = [this];
