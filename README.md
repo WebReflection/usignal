@@ -130,3 +130,37 @@ This file is not meant at all as meaningful benchmark against other libraries, i
   * ~~there should be zero leaks on signals when a computed reference is garbage collected~~ v0.5.0 removed the *WeakRef*, computeds go when signals go ... [but why?!](https://twitter.com/WebReflection/status/1570380914613694466)
   * the amount of used memory should always be lower than the initial one
   * the performance should be competitive compared to others
+
+## How to integrate with Lit
+
+You create a following [mixin](https://lit.dev/docs/composition/mixins/) function. Your class inherits from Mixin. Please see the [demo](https://lit.dev/playground/#project=W3sibmFtZSI6InNpZ25hbC1leGFtcGxlLmpzIiwiY29udGVudCI6ImltcG9ydCB7IGh0bWwsIGNzcywgTGl0RWxlbWVudCB9IGZyb20gJ2xpdCc7XG5pbXBvcnQgeyBXaXRoVXNpZ25hbCB9IGZyb20gJy4vd2l0aC11c2lnbmFsLmpzJztcbmltcG9ydCB7IHNpZ25hbCB9IGZyb20gJ3VzaWduYWwnO1xuXG5jb25zdCBjb3VudGVyID0gc2lnbmFsKDEpO1xuXG5jbGFzcyBTaWduYWxFeGFtcGxlIGV4dGVuZHMgV2l0aFVzaWduYWwoTGl0RWxlbWVudCkge1xuICBzdGF0aWMgc3R5bGVzID0gY3NzYFxuICAgIDpob3N0IHtcbiAgICAgIGRpc3BsYXk6IGJsb2NrO1xuICAgICAgYm9yZGVyOiBzb2xpZCAxcHggYmx1ZTtcbiAgICAgIHBhZGRpbmc6IDhweDtcbiAgICAgIG1hcmdpbjogNHB4O1xuICAgIH1cbiAgYDtcblxuICBzdGF0aWMgcHJvcGVydGllcyA9IHtcbiAgICBjb3VudDogeyBzdGF0ZTogdHJ1ZSB9LFxuICAgIG5hbWU6IHt9XG4gIH1cblxuICBjb25zdHJ1Y3RvcigpIHtcbiAgICBzdXBlcigpO1xuICAgIHRoaXMuY291bnQgPSAxO1xuICB9XG5cbiAgcmVuZGVyKCkge1xuICAgIHJldHVybiBodG1sYFxuICAgICAgPGg0PiR7dGhpcy5uYW1lfTwvaDQ-XG4gICAgICA8cD5cbiAgICAgICAgU2lnbmFsIGNvdW50ZXI6ICR7Y291bnRlcn1cbiAgICAgICAgPGJ1dHRvbiBAY2xpY2s9JHsoKSA9PiBjb3VudGVyLnZhbHVlKyt9PisrPC9idXR0b24-XG4gICAgICA8L3A-XG4gICAgICA8cD5cbiAgICAgICAgUmVhY3RpdmUgcHJvcGVydHkgY291bnRlcjogJHt0aGlzLmNvdW50fVxuICAgICAgICA8YnV0dG9uIEBjbGljaz0keygpID0-IHRoaXMuY291bnQrK30-Kys8L2J1dHRvbj5cbiAgICAgIDwvcD5cbiAgICBgO1xuICB9XG59XG5cbmN1c3RvbUVsZW1lbnRzLmRlZmluZSgnc2lnbmFsLWV4YW1wbGUnLCBTaWduYWxFeGFtcGxlKTsifSx7Im5hbWUiOiJpbmRleC5odG1sIiwiY29udGVudCI6IjwhRE9DVFlQRSBodG1sPlxuPGh0bWw-XG4gIDxoZWFkPlxuICAgIDxzY3JpcHQgdHlwZT1cIm1vZHVsZVwiIHNyYz1cIi4vc2lnbmFsLWV4YW1wbGUuanNcIj48L3NjcmlwdD5cbiAgICA8c3R5bGU-XG4gICAgICBib2R5IHtcbiAgICAgICAgZm9udC1zaXplOiAxLjI1cmVtO1xuICAgICAgICBmb250LWZhbWlseTogc2Fucy1zZXJpZjtcbiAgICAgIH1cbiAgICA8L3N0eWxlPlxuICA8L2hlYWQ-XG4gIDxib2R5PlxuICAgIDxzaWduYWwtZXhhbXBsZSBuYW1lPVwiSW5zdGFuY2UgMVwiPjwvc2lnbmFsLWV4YW1wbGU-XG4gICAgPHNpZ25hbC1leGFtcGxlIG5hbWU9XCJJbnN0YW5jZSAyXCI-PC9zaWduYWwtZXhhbXBsZT5cbiAgPC9ib2R5PlxuPC9odG1sPiJ9LHsibmFtZSI6InBhY2thZ2UuanNvbiIsImNvbnRlbnQiOiJ7XG4gIFwiZGVwZW5kZW5jaWVzXCI6IHtcbiAgICBcImxpdFwiOiBcIl4yLjAuMFwiLFxuICAgIFwiQGxpdC9yZWFjdGl2ZS1lbGVtZW50XCI6IFwiXjEuMC4wXCIsXG4gICAgXCJsaXQtZWxlbWVudFwiOiBcIl4zLjAuMFwiLFxuICAgIFwibGl0LWh0bWxcIjogXCJeMi4wLjBcIlxuICB9XG59IiwiaGlkZGVuIjp0cnVlfSx7Im5hbWUiOiJ3aXRoLXVzaWduYWwuanMiLCJjb250ZW50IjoiaW1wb3J0IHsgZWZmZWN0IH0gZnJvbSAndXNpZ25hbCc7XG5cbmV4cG9ydCBmdW5jdGlvbiBXaXRoVXNpZ25hbChCYXNlKXtcbiAgcmV0dXJuIGNsYXNzIFdpdGhVc2lnbmFsIGV4dGVuZHMgQmFzZSB7XG4gICAgI2Rpc3Bvc2VFZmZlY3RcbiBcbiAgICBkaXNjb25uZWN0ZWRDYWxsYmFjaygpIHtcbiAgICAgIHRoaXMuI2Rpc3Bvc2VFZmZlY3Q_LigpO1xuICAgIH1cblxuICAgIHBlcmZvcm1VcGRhdGUoKSB7XG4gICAgICBpZiAoIXRoaXMuaXNVcGRhdGVQZW5kaW5nKSB7XG4gICAgICAgIHJldHVybjtcbiAgICAgIH1cblxuICAgICAgaWYgKHRoaXMuI2Rpc3Bvc2VFZmZlY3QpIHtcbiAgICAgICAgc3VwZXIucGVyZm9ybVVwZGF0ZSgpO1xuICAgICAgICByZXR1cm5cbiAgICAgIH1cblxuICAgICAgdGhpcy4jZGlzcG9zZUVmZmVjdCA9IGVmZmVjdCgoKSA9PiB7XG4gICAgICAgIHRoaXMuaXNVcGRhdGVQZW5kaW5nID0gdHJ1ZTtcbiAgICAgICAgc3VwZXIucGVyZm9ybVVwZGF0ZSgpO1xuICAgICAgfSk7XG4gICAgfVxuICB9O1xufSJ9XQ) for details. 
+
+```js
+import { effect } from 'usignal';
+
+export function WithUsignal(Base){
+  return class WithUsignal extends Base {
+    #disposeEffect
+ 
+    disconnectedCallback() {
+      this.#disposeEffect?.();
+    }
+
+    performUpdate() {
+      if (!this.isUpdatePending) {
+        return;
+      }
+
+      if (this.#disposeEffect) {
+        super.performUpdate();
+        return
+      }
+
+      this.#disposeEffect = effect(() => {
+        this.isUpdatePending = true;
+        super.performUpdate();
+      });
+    }
+  };
+}
+```
