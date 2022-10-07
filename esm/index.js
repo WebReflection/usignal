@@ -82,6 +82,10 @@ export const computed = (fn, value, options = defaults) =>
 
 let outerEffect;
 const noop = () => {};
+const dispose = ({s}) => {
+  if (typeof s._ === 'function')
+    s._ = s._();
+};
 class Effect extends Computed {
   constructor(_, v, o) {
     super(_, v, o, true);
@@ -107,6 +111,7 @@ class Effect extends Computed {
     const prev = outerEffect;
     const {e} = (outerEffect = this);
     this.i = 0;
+    dispose(this);
     super.value;
     // if effects are present in loops, these can grow or shrink.
     // when these grow, there's nothing to do, as well as when these are
@@ -120,6 +125,7 @@ class Effect extends Computed {
     outerEffect = prev;
   }
   stop() {
+    dispose(this);
     this._ = noop;
     this.r.clear();
     this.s.c.clear();

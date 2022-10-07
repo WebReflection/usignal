@@ -29,8 +29,22 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
 
   assert(signal(0) instanceof Signal, 'signals are not instances of Signal');
 
-  if (/^(?:usignal|@preact\/signals-core)$/.test(library))
+  if (/^(?:usignal|@preact\/signals-core)$/.test(library)) {
     assert(computed(() => {}) instanceof Signal, 'computeds are not instances of Signal');
+    let calls = 0;
+    const $ = signal(0);
+    const dispose = effect(() => {
+      calls++;
+      $.value;
+      return () => calls++;
+    });
+
+    $.value = 1;
+    assert(calls === 3, 'effect did not call again');
+
+    dispose();
+    assert(calls === 4, 'dispose did not invoke the calllback');
+  }
 
   testPrimitive();
   testComputed();
