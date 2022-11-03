@@ -109,19 +109,9 @@ class Effect extends Computed {
   }
   sync() {
     const prev = outerEffect;
-    const {e} = (outerEffect = this);
-    this.i = 0;
+    (outerEffect = this).i = 0;
     dispose(this);
     super.value;
-    // if effects are present in loops, these can grow or shrink.
-    // when these grow, there's nothing to do, as well as when these are
-    // still part of the loop, as the callback gets updated anyway.
-    // however, if there were more effects before but none now, those can
-    // just stop being referenced and go with the GC.
-    if (this.i < e.length)
-      for (const effect of e.splice(this.i))
-        effect.stop();
-    for (const {value} of e);
     outerEffect = prev;
   }
   stop() {
@@ -145,14 +135,17 @@ export const effect = (callback, value, options = defaults) => {
   let unique;
   if (outerEffect) {
     const {i, e} = outerEffect;
+    const isNew = i === e.length;
     // bottleneck:
     // there's literally no way to optimize this path *unless* the callback is
     // already a known one. however, latter case is not really common code so
     // the question is: should I optimize this more than this? 'cause I don't
     // think the amount of code needed to understand if a callback is *likely*
     // the same as before makes any sense + correctness would be trashed.
-    if (i === e.length || e[i]._ !== callback)
+    if (isNew || e[i]._ !== callback) {
+      if (!isNew) e[i].stop();
       (e[i] = new Effect(callback, value, options)).value;
+    }
     unique = e[i];
     outerEffect.i++;
   }
