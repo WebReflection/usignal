@@ -69,7 +69,7 @@ class Computed extends Signal {
   }
 }
 
-const defaults = {async: false, equals: true};
+const defaults = {async: false, equals: true, detached: false};
 
 /**
  * Returns a read-only Signal that is invoked only when any of the internally
@@ -81,6 +81,7 @@ export const computed = (fn, value, options = defaults) =>
                           new Computed(fn, value, options, false);
 
 let outerEffect;
+const empty = [];
 const noop = () => {};
 const dispose = ({s}) => {
   if (typeof s._ === 'function')
@@ -89,11 +90,11 @@ const dispose = ({s}) => {
 class Effect extends Computed {
   constructor(_, v, o) {
     super(_, v, o, true);
-    this.i = 0;         // index
-    this.a = !!o.async; // async
-    this.m = true;      // microtask
-    this.e = [];        // effects
-                        // "I am effects" ^_^;;
+    this.i = 0;                       // index
+    this.a = !!o.async;               // async
+    this.m = true;                    // microtask
+    this.e = o.detached ? empty : []; // effects
+                                      // "I am effects" ^_^;;
   }
   get value() {
     this.a ? this.async() : this.sync();
@@ -119,8 +120,10 @@ class Effect extends Computed {
     this._ = noop;
     this.r.clear();
     this.s.c.clear();
-    for (const effect of this.e.splice(0))
-      effect.stop();
+    if (this.e !== empty) {
+      for (const effect of this.e.splice(0))
+        effect.stop();
+    }
   }
 }
 
@@ -129,11 +132,11 @@ class Effect extends Computed {
  * 
  * Returns a dispose callback.
  * @template T
- * @type {<T>(fn: (v: T) => T, value?: T, options?: { async?: boolean }) => () => void}
+ * @type {<T>(fn: (v: T) => T, value?: T, options?: { async?: boolean, detached?: boolean }) => () => void}
  */
 export const effect = (callback, value, options = defaults) => {
   let unique;
-  if (outerEffect) {
+  if (outerEffect && !options.detached) {
     const {i, e} = outerEffect;
     const isNew = i === e.length;
     // bottleneck:

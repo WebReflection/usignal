@@ -25,6 +25,16 @@ var c = computed(() => s());
 assert(s() === 0 && c() === 0, 'wrong initial value');
 assert(s(1) === 1 && c() === 1, 'wrong updated value');
 
+usignal.effect(
+  () => {
+    usignal.effect(
+      Object,
+      null,
+      {detached: true}
+    );
+  }
+);
+
 import {createEffect, createMemo, createSignal} from '../esm/solid/index.js';
 
 var [s, u] = createSignal(() => 0);

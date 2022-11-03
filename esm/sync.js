@@ -1,7 +1,7 @@
 export * from './index.js';
 import {effect as fx} from './index.js';
 
-const options = {async: false};
+const options = {async: false, detached: false};
 
 /**
  * Invokes synchronously a function when any of its internal signals or computed values change.

@@ -31,10 +31,11 @@ export const computed: <T>(fn: (v: T) => T, value?: T, options?: {
  *
  * Returns a dispose callback.
  * @template T
- * @type {<T>(fn: (v: T) => T, value?: T, options?: { async?: boolean }) => () => void}
+ * @type {<T>(fn: (v: T) => T, value?: T, options?: { async?: boolean, detached?: boolean }) => () => void}
  */
 export const effect: <T>(fn: (v: T) => T, value?: T, options?: {
     async?: boolean;
+    detached?: boolean;
 }) => () => void;
 /**
  * Returns a writable Signal that side-effects whenever its value gets updated.

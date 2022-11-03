@@ -3,7 +3,7 @@
 (require('./index.js'));
 const {effect: fx} = require('./index.js');
 
-const options = {async: true};
+const options = {async: true, detached: false};
 
 /**
  * Invokes asynchronously a function when any of its internal signals or computed values change.
