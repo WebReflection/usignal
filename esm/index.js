@@ -81,6 +81,7 @@ export const computed = (fn, value, options = defaults) =>
                           new Computed(fn, value, options, false);
 
 let outerEffect;
+const empty = [];
 const noop = () => {};
 const dispose = ({s}) => {
   if (typeof s._ === 'function')
@@ -90,6 +91,7 @@ const dispose = ({s}) => {
 export class FX extends Computed {
   constructor(_, v, o) {
     super(_, v, o, true);
+    this.e = empty;
   }
   run() {
     this.$ = true;

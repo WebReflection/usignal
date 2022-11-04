@@ -28,6 +28,7 @@ export const computed: <T>(fn: (v: T) => T, value?: T, options?: {
 }) => Signal<T>;
 export class FX extends Computed {
     constructor(_: any, v: any, o: any);
+    e: any[];
     run(): FX;
     stop(): void;
 }
@@ -35,7 +36,6 @@ export class Effect extends FX {
     i: number;
     a: boolean;
     m: boolean;
-    e: any[];
     get value(): void;
     async(): void;
     sync(): void;
