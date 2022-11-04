@@ -90,6 +90,7 @@ const dispose = ({s}) => {
   if (typeof s._ === 'function')
     s._ = s._();
 };
+
 class Effect extends Computed {
   constructor(_, v, o) {
     super(_, v, o, true);
@@ -127,6 +128,7 @@ class Effect extends Computed {
       effect.stop();
   }
 }
+exports.Effect = Effect
 
 /**
  * Invokes a function when any of its internal signals or computed values change.

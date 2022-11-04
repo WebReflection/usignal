@@ -86,7 +86,8 @@ const dispose = ({s}) => {
   if (typeof s._ === 'function')
     s._ = s._();
 };
-class Effect extends Computed {
+
+export class Effect extends Computed {
   constructor(_, v, o) {
     super(_, v, o, true);
     this.i = 0;         // index
