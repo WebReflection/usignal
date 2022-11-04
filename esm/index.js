@@ -94,6 +94,7 @@ export class FX extends Computed {
   run() {
     this.$ = true;
     this.value;
+    return this;
   }
   stop() {
     this._ = noop;
@@ -158,13 +159,13 @@ export const effect = (callback, value, options = defaults) => {
     // the same as before makes any sense + correctness would be trashed.
     if (isNew || e[i]._ !== callback) {
       if (!isNew) e[i].stop();
-      (e[i] = new Effect(callback, value, options)).value;
+      e[i] = new Effect(callback, value, options).run();
     }
     unique = e[i];
     outerEffect.i++;
   }
   else
-    (unique = new Effect(callback, value, options)).value;
+    unique = new Effect(callback, value, options).run();
   return () => { unique.stop() };
 };
 
