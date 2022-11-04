@@ -91,9 +91,25 @@ const dispose = ({s}) => {
     s._ = s._();
 };
 
-class Effect extends Computed {
+class FX extends Computed {
   constructor(_, v, o) {
     super(_, v, o, true);
+  }
+  run() {
+    this.$ = true;
+    this.value;
+  }
+  stop() {
+    this._ = noop;
+    this.r.clear();
+    this.s.c.clear();
+  }
+}
+exports.FX = FX
+
+class Effect extends FX {
+  constructor(_, v, o) {
+    super(_, v, o);
     this.i = 0;         // index
     this.a = !!o.async; // async
     this.m = true;      // microtask
@@ -120,10 +136,8 @@ class Effect extends Computed {
     outerEffect = prev;
   }
   stop() {
+    super.stop();
     dispose(this);
-    this._ = noop;
-    this.r.clear();
-    this.s.c.clear();
     for (const effect of this.e.splice(0))
       effect.stop();
   }

@@ -9,6 +9,14 @@ const assert = (what, why) => {
     throw new Error(`\x1b[1m${library}\x1b[0m: ${why}`);
 };
 
+let invokes = 0;
+const fx = new usignal.FX(() => { invokes++; }, null, {equals: true});
+fx.run();
+assert(invokes === 1);
+fx.run();
+assert(invokes === 2);
+
+
 setTimeout(
   async () => {
     (await import('./test.js')).default('usignal', usignal);

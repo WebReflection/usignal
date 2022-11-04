@@ -26,8 +26,12 @@ export class Signal<T> {
 export const computed: <T>(fn: (v: T) => T, value?: T, options?: {
     equals?: boolean | ((prev: T, next: T) => boolean);
 }) => Signal<T>;
-export class Effect extends Computed {
+export class FX extends Computed {
     constructor(_: any, v: any, o: any);
+    run(): void;
+    stop(): void;
+}
+export class Effect extends FX {
     i: number;
     a: boolean;
     m: boolean;
@@ -35,7 +39,6 @@ export class Effect extends Computed {
     get value(): void;
     async(): void;
     sync(): void;
-    stop(): void;
 }
 /**
  * Invokes a function when any of its internal signals or computed values change.
