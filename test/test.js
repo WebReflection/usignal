@@ -50,18 +50,22 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
   testComputed();
   testEffect();
   testBatch();
-  testBatchMore();
+  if (!/^(?:@webreflection\/signal)$/.test(library))
+    testBatchMore();
   nestedBatch();
   readOnly();
   testPeek();
   testComputedUniqueness();
-  testComputedMoar();
+  if (!/^(?:@webreflection\/signal)$/.test(library))
+    testComputedMoar();
 
-  if (/^(?:usignal|@preact\/signals-core)$/.test(library))
+  if (/^(?:usignal|@preact\/signals-core|@webreflection\/signal)$/.test(library))
     implicitToString();
 
-  testDiamond();
-  loopedEffects();
+  if (!/^(?:@webreflection\/signal)$/.test(library)) {
+    testDiamond();
+    loopedEffects();
+  }
 
   nestedEffects();
   nestedIndependentEffects();
@@ -239,10 +243,10 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
     assert(fullName.value === 'Jane Doe', 'computed not working');
     assert(invokes === 1, 'computed value should have been invoked once');
     name.value = 'John';
-    if (/^(?:usignal|@preact\/signals-core)$/.test(library)) fullName.value;
+    if (/^(?:usignal|@preact\/signals-core|@webreflection\/signal)$/.test(library)) fullName.value;
     assert(invokes === 2, 'computed value should have been invoked again');
     name.value = 'John';
-    if (/^(?:usignal|@preact\/signals-core)$/.test(library)) fullName.value;
+    if (/^(?:usignal|@preact\/signals-core|@webreflection\/signal)$/.test(library)) fullName.value;
     assert(invokes === 2, 'computed value should NOT have been invoked again');
   }
 

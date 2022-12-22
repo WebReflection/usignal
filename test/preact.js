@@ -1,4 +1,4 @@
 import test from './test.js';
-import * as usignal from '@preact/signals-core';
+import * as preact from '@preact/signals-core';
 
-test('@preact/signals-core', usignal);
+test('@preact/signals-core', preact);

@@ -1,15 +1,20 @@
 import {argv, memoryUsage} from 'node:process';
 
-const library = argv.find(arg => /^(?:preact|solid|solid-js)$/.test(arg));
+const BATCHED = argv.includes('batched');
+const library = argv.find(arg => /^(?:preact|signal|solid|solid-js)$/.test(arg));
 
 console.log('');
-console.log(`\x1b[1m${library || 'usignal'}\x1b[0m`);
+console.log(`\x1b[1m${library || 'usignal'}\x1b[0m`, BATCHED ? 'batched' : '');
 
-const {effect, signal, computed} = await import(
+const {batch, effect, signal, computed} = await import(
   library ?
     (library === 'preact' ?
       '@preact/signals-core' :
-      './solid-to-usignal.js') :
+      (library === 'signal' ?
+        '@webreflection/signal' :
+        './solid-to-usignal.js'
+      )
+    ) :
     '../esm/index.js'
 );
 
@@ -45,8 +50,17 @@ const dispose = effect(() => {
 console.timeEnd('effect creation');
 
 console.time('updating 26 signals');
-for (const s of signals)
-  s.value++;
+
+const updates = () => {
+  for (const s of signals)
+    s.value++;
+};
+
+if (BATCHED)
+  batch(updates);
+else
+  updates();
+
 console.timeEnd('updating 26 signals');
 
 console.log('\x1b[1mcomputed\x1b[0m', computeds);

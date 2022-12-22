@@ -1,11 +1,12 @@
 {
   "type": "module",
   "devDependencies": {
+    "@preact/signals-core": "latest",
+    "@webreflection/signal": "latest",
     "cellx": "latest",
     "cli-table": "latest",
     "kleur": "latest",
     "s-js": "latest",
-    "@preact/signals-core": "latest",
     "solid-js": "latest"
   }
 }
