@@ -33,7 +33,7 @@ export class Signal {
   }
 
   /** @returns {T} */
-  then() { return this.value }
+  then(callback) { callback(this.value) }
 
   /** @returns {T} */
   toJSON() { return this.value }
