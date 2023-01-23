@@ -32,7 +32,7 @@ export class Signal {
     this._ = value;
   }
 
-  /** @returns {T} */
+  /** @param {function} resolve */
   then(resolve) { resolve(this.value) }
 
   /** @returns {T} */

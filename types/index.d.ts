@@ -8,8 +8,8 @@ export class Signal<T> {
     /** @param {T} value the value carried along the signal. */
     constructor(value: T);
     value: T;
-    /** @returns {T} */
-    then(): T;
+    /** @param {function} resolve */
+    then(resolve: Function): void;
     /** @returns {T} */
     toJSON(): T;
     /** @returns {T} */
