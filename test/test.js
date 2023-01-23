@@ -16,7 +16,7 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
     (async t => {
       assert(await signal(3) === 3, 'thenable signal');
       assert(await computed(() => 4) === 4, 'thenable computed');
-      clearTimeout(i);
+      clearTimeout(t);
     })(setTimeout(assert, 1000, false, 'promise does not resolve'));
 
     const one = signal(1, {equals: false});
