@@ -11,6 +11,7 @@
  import * as solid from './solid-js-baseline.js';
  import * as preact from '@preact/signals-core';
  import * as usignal from '../esm/index.js';
+ import * as signal from '@webreflection/signal';
  import Table from 'cli-table';
  
  const RUNS_PER_TIER = 150;
@@ -49,6 +50,7 @@
      // sinuous: { fn: runSinuous, runs: [] },
      cellx: { fn: runCellx, runs: [] },
      usignal: { fn: runUsignal, runs: [] },
+     signal: { fn: runSignal, runs: [] },
    };
  
    for (const lib of Object.keys(report)) {
@@ -319,6 +321,46 @@
     const startTime = performance.now();
   
     const run = BATCHED ? usignal.batch : (fn) => fn();
+    run(() => {
+      (a.value = 4), (b.value = 3), (c.value = 2), (d.value = 1);
+  
+      const end = layer;
+      const solution = [end.a.value, end.b.value, end.c.value, end.d.value];
+      const endTime = performance.now() - startTime;
+  
+      done(isSolution(layers, solution) ? endTime : -1);
+    });
+  }
+ 
+ /**
+  * @see {@link https://github.com/WebReflection/signal}
+  */
+  function runSignal(layers, done) {
+    const a = signal.signal(1),
+      b = signal.signal(2),
+      c = signal.signal(3),
+      d = signal.signal(4);
+  
+    const start = { a, b, c, d };
+  
+    let layer = start;
+  
+    for (let i = layers; i--; ) {
+      layer = ((m) => {
+        const props = {
+          a: signal.computed(() => rand % 2 ? m.b.value : m.c.value),
+          b: signal.computed(() => m.a.value - m.c.value),
+          c: signal.computed(() => m.b.value + m.d.value),
+          d: signal.computed(() => m.c.value),
+        };
+  
+        return props;
+      })(layer);
+    }
+  
+    const startTime = performance.now();
+  
+    const run = BATCHED ? signal.batch : (fn) => fn();
     run(() => {
       (a.value = 4), (b.value = 3), (c.value = 2), (d.value = 1);
   
