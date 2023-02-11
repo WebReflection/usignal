@@ -3,6 +3,11 @@
   "version": "0.8.10",
   "main": "./cjs/index.js",
   "types": "./types/index.d.ts",
+  "typesVersions": {
+    ">=4.9": {
+        "*": ["types/*"]
+    }
+  },
   "scripts": {
     "benchmark": "node test/benchmark.js",
     "build": "npm run cjs && npm run rollup:es && npm run types && npm run readme-size && npm run test && npm run size",
