@@ -27,12 +27,18 @@ export const batch = callback => {
  * @template T
  */
 export class Signal {
+  /**
+   * @private
+   * @type {T}
+   */
+  _
+
   /** @param {T} value the value carried along the signal. */
   constructor(value) {
     this._ = value;
   }
 
-  /** @param {function} resolve */
+  /** @param {(resolve: (value: T) => void} resolve */
   then(resolve) { resolve(this.value) }
 
   /** @returns {T} */
@@ -46,7 +52,12 @@ export class Signal {
 }
 
 let computedSignal;
+/**
+ * @template T
+ * @extends {Signal<T>}
+ */
 class Computed extends Signal {
+  /** @param {T} _ the value carried along the signal. */
   constructor(_, v, o, f) {
     super(_);
     this.f = f;                   // is effect?
@@ -75,7 +86,7 @@ const defaults = {async: false, equals: true};
  * Returns a read-only Signal that is invoked only when any of the internally
  * used signals, as in within the callback, is unknown or updated.
  * @template T
- * @type {<T>(fn: (v: T) => T, value?: T, options?: { equals?: boolean | ((prev: T, next: T) => boolean) }) => Signal<T>}
+ * @type {<T>(fn: (v: T) => T, value?: T, options?: { equals?: Equals }) => Signal<T>}
  */
 export const computed = (fn, value, options = defaults) =>
                           new Computed(fn, value, options, false);
@@ -88,7 +99,12 @@ const dispose = ({s}) => {
     s._ = s._();
 };
 
+/**
+ * @template T
+ * @extends {Computed<T>}
+ */
 export class FX extends Computed {
+  /** @param {T} _ the value carried along the signal. */
   constructor(_, v, o) {
     super(_, v, o, true);
     this.e = empty;
@@ -105,7 +121,12 @@ export class FX extends Computed {
   }
 }
 
+/**
+ * @template T
+ * @extends {FX<T>}
+ */
 export class Effect extends FX {
+  /** @param {T} _ the value carried along the signal. */
   constructor(_, v, o) {
     super(_, v, o);
     this.i = 0;         // index
@@ -172,13 +193,26 @@ export const effect = (callback, value, options = defaults) => {
 };
 
 const skip = () => false;
+/**
+ * @template T
+ * @extends {Signal<T>}
+ */
 class Reactive extends Signal {
+  /**
+   * @param {T} _ the value carried along the signal.
+   * @param {{ equals?: Equals }} a2 the value carried along the signal.
+   */
   constructor(_, {equals}) {
     super(_)
     this.c = new Set;                                 // computeds
     this.s = equals === true ? is : (equals || skip); // (don't) skip updates
   }
+  /**
+   * Allows to get signal.value without subscribing to updates in an effect
+   * @returns {T}
+   */
   peek() { return this._ }
+  /** @returns {T} */
   get value() {
     if (computedSignal) {
       this.c.add(computedSignal);
@@ -223,6 +257,10 @@ class Reactive extends Signal {
 /**
  * Returns a writable Signal that side-effects whenever its value gets updated.
  * @template T
- * @type {<T>(initialValue: T, options?: { equals?: boolean | ((prev: T, next: T) => boolean) }) => Signal<T>}
+ * @type {<T>(initialValue: T, options?: { equals?: Equals }) => Signal<T> & Pick<Reactive<T>, 'peek'>}
  */
 export const signal = (value, options = defaults) => new Reactive(value, options);
+
+/**
+ * @typedef {boolean | ((prev: T, next: T) => boolean)} Equals
+ */
