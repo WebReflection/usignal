@@ -1,11 +1,13 @@
 {
   "name": "usignal",
-  "version": "0.8.10",
+  "version": "0.8.11",
   "main": "./cjs/index.js",
   "types": "./types/index.d.ts",
   "typesVersions": {
     ">=4.9": {
-        "*": ["types/*"]
+      "*": [
+        "types/*"
+      ]
     }
   },
   "scripts": {
