@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+      "module": "ES2022",
+      "target": "ES2022",
+      "moduleResolution": "node",
+      "declaration": false,
+      "noEmit": true
+  },
+  "include": [
+    "types.ts"
+  ]
+}

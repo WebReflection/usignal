@@ -16,7 +16,7 @@
     "build": "npm run cjs && npm run rollup:es && npm run types && npm run readme-size && npm run test && npm run size",
     "cjs": "ascjs esm cjs",
     "rollup:es": "rollup --config rollup/es.config.js",
-    "test": "c8 node --expose-gc test/index.js $@",
+    "test": "tsc -p test && c8 node --expose-gc test/index.js $@",
     "size": "cat es.js | brotli | wc -c",
     "leak": "node --expose-gc ./test/leak.js $@",
     "types": "tsc -p . && npm run fix:types",
@@ -38,6 +38,7 @@
     "ascjs": "^5.0.1",
     "c8": "^7.12.0",
     "rollup": "^3.10.1",
+    "ts-expect": "^1.3.0",
     "typescript": "^4.9.4"
   },
   "module": "./esm/index.js",
