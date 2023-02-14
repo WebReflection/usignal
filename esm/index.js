@@ -27,13 +27,6 @@ export const batch = callback => {
  * @template T
  */
 export class Signal {
-  /**
-   * @private
-   * @type {T}
-   */
-  _
-
-  /** @param {T} value the value carried along the signal. */
   constructor(value) {
     this._ = value;
   }
@@ -54,7 +47,22 @@ export class Signal {
 }
 
 let computedSignal;
+/**
+ * @template T
+ * @extends {Signal<T>}
+ */
 class Computed extends Signal {
+  /**
+   * @private
+   * @type{Reactive<T>}
+   */
+  s
+  /**
+   * @param {(v: T) => T} _ 
+   * @param {T} v 
+   * @param {{ equals?: Equals<T> }} o
+   * @param {boolean} f 
+   */
   constructor(_, v, o, f) {
     super(_);
     this.f = f;                   // is effect?
@@ -82,8 +90,7 @@ const defaults = {async: false, equals: true};
 /**
  * Returns a read-only Signal that is invoked only when any of the internally
  * used signals, as in within the callback, is unknown or updated.
- * @template T
- * @type {<T>(fn: (v: T) => T, value?: T, options?: { equals?: Equals }) => Signal<T>}
+ * @type {<R, V, T = V extends unknown ? R : R|V>(fn: (v: T) => R, value?: V, options?: { equals?: Equals<T> }) => Omit<Computed<T>, '$'|'s'|'f'|'r'|'_'>}
  */
 export const computed = (fn, value, options = defaults) =>
                           new Computed(fn, value, options, false);
@@ -195,6 +202,7 @@ class Reactive extends Signal {
    * @returns {T}
    */
   peek() { return this._ }
+  /** @returns {T} */
   get value() {
     if (computedSignal) {
       this.c.add(computedSignal);
@@ -239,10 +247,11 @@ class Reactive extends Signal {
 /**
  * Returns a writable Signal that side-effects whenever its value gets updated.
  * @template T
- * @type {<T>(initialValue: T, options?: { equals?: Equals }) => Signal<T> & Pick<Reactive<T>, 'peek'>}
+ * @type {<T>(initialValue: T, options?: { equals?: Equals<T> }) => Omit<Reactive<T>, '_'|'s'|'c'>}
  */
 export const signal = (value, options = defaults) => new Reactive(value, options);
 
 /**
+ * @template [T=any]
  * @typedef {boolean | ((prev: T, next: T) => boolean)} Equals
  */
