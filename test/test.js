@@ -14,7 +14,8 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
     assert((signal(1) + signal(2)) === 3, 'valueOf not working');
     testStoppedAsyncEffect();
     (async t => {
-      assert(await signal(3) === 3, 'thenable signal');
+      assert(await signal(3) === 3, 'await signal broke');
+      assert(await signal(3).then(String) === '3', 'signal.then broke');
       assert(await computed(() => 4) === 4, 'thenable computed');
       clearTimeout(t);
     })(setTimeout(assert, 1000, false, 'promise does not resolve'));
