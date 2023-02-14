@@ -6,7 +6,8 @@
   "typesVersions": {
     ">=4.9": {
       "*": [
-        "types/*"
+        "types/*",
+        "types/index.d.ts"
       ]
     }
   },
