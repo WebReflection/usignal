@@ -46,8 +46,8 @@ export class Signal {
   /** @returns {T} */
   toJSON() { return this.value }
 
-  /** @returns {T} */
-  toString() { return this.value }
+  /** @returns {string} */
+  toString() { return String(this.value) }
 
   /** @returns {T} */
   valueOf() { return this.value }
