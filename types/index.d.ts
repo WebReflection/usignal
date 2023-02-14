@@ -12,8 +12,7 @@ export class Signal<T> {
      * @type {T}
      */
     private _;
-    /** @param {(resolve: (value: T) => void} resolve */
-    then(resolve: (resolve: (value: T) => void) => any): void;
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: (value: T) => TResult1 | PromiseLike<TResult1>, onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2>): Promise<TResult1 | TResult2>;
     /** @returns {T} */
     toJSON(): T;
     /** @returns {T} */
@@ -30,22 +29,13 @@ export class Signal<T> {
 export const computed: <T>(fn: (v: T) => T, value?: T, options?: {
     equals?: Equals;
 }) => Signal<T>;
-/**
- * @template T
- * @extends {Computed<T>}
- */
-export class FX<T> extends Computed<T> {
-    /** @param {T} _ the value carried along the signal. */
-    constructor(_: T, v: any, o: any);
+export class FX extends Computed {
+    constructor(_: any, v: any, o: any);
     e: any[];
-    run(): FX<T>;
+    run(): FX;
     stop(): void;
 }
-/**
- * @template T
- * @extends {FX<T>}
- */
-export class Effect<T> extends FX<T> {
+export class Effect extends FX {
     i: number;
     a: boolean;
     m: boolean;
@@ -72,13 +62,8 @@ export const signal: <T>(initialValue: T, options?: {
     equals?: Equals;
 }) => Signal<T> & Pick<Reactive<T>, "peek">;
 export type Equals = boolean | ((prev: T, next: T) => boolean);
-/**
- * @template T
- * @extends {Signal<T>}
- */
-declare class Computed<T> extends Signal<T> {
-    /** @param {T} _ the value carried along the signal. */
-    constructor(_: T, v: any, o: any, f: any);
+declare class Computed extends Signal<any> {
+    constructor(_: any, v: any, o: any, f: any);
     f: any;
     $: boolean;
     r: Set<any>;
@@ -91,22 +76,18 @@ declare class Computed<T> extends Signal<T> {
  * @extends {Signal<T>}
  */
 declare class Reactive<T> extends Signal<T> {
-    /**
-     * @param {T} _ the value carried along the signal.
-     * @param {{ equals?: Equals }} a2 the value carried along the signal.
-     */
-    constructor(_: T, { equals }: {
-        equals?: Equals;
+    constructor(_: any, { equals }: {
+        equals: any;
     });
     c: Set<any>;
-    s: (value1: any, value2: any) => boolean;
+    s: any;
     /**
      * Allows to get signal.value without subscribing to updates in an effect
      * @returns {T}
      */
     peek(): T;
-    set value(arg: T);
-    /** @returns {T} */
-    get value(): T;
+    set value(arg: any);
+    get value(): any;
+    _: any;
 }
 export {};

@@ -40,8 +40,10 @@ class Signal {
     this._ = value;
   }
 
-  /** @param {(resolve: (value: T) => void} resolve */
-  then(resolve) { resolve(this.value) }
+  /**
+   * @type {Promise<T>['then']}
+   */
+  then(onfulfilled) { return Promise.resolve(this.value).then(onfulfilled) }
 
   /** @returns {T} */
   toJSON() { return this.value }
@@ -55,12 +57,7 @@ class Signal {
 exports.Signal = Signal
 
 let computedSignal;
-/**
- * @template T
- * @extends {Signal<T>}
- */
 class Computed extends Signal {
-  /** @param {T} _ the value carried along the signal. */
   constructor(_, v, o, f) {
     super(_);
     this.f = f;                   // is effect?
@@ -103,12 +100,7 @@ const dispose = ({s}) => {
     s._ = s._();
 };
 
-/**
- * @template T
- * @extends {Computed<T>}
- */
 class FX extends Computed {
-  /** @param {T} _ the value carried along the signal. */
   constructor(_, v, o) {
     super(_, v, o, true);
     this.e = empty;
@@ -126,12 +118,7 @@ class FX extends Computed {
 }
 exports.FX = FX
 
-/**
- * @template T
- * @extends {FX<T>}
- */
 class Effect extends FX {
-  /** @param {T} _ the value carried along the signal. */
   constructor(_, v, o) {
     super(_, v, o);
     this.i = 0;         // index
@@ -205,10 +192,6 @@ const skip = () => false;
  * @extends {Signal<T>}
  */
 class Reactive extends Signal {
-  /**
-   * @param {T} _ the value carried along the signal.
-   * @param {{ equals?: Equals }} a2 the value carried along the signal.
-   */
   constructor(_, {equals}) {
     super(_)
     this.c = new Set;                                 // computeds
@@ -219,7 +202,6 @@ class Reactive extends Signal {
    * @returns {T}
    */
   peek() { return this._ }
-  /** @returns {T} */
   get value() {
     if (computedSignal) {
       this.c.add(computedSignal);
