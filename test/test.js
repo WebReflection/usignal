@@ -57,6 +57,7 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
   nestedBatch();
   readOnly();
   testPeek();
+  testComputedPeek();
   testComputedUniqueness();
   if (!/^(?:@webreflection\/signal)$/.test(library))
     testComputedMoar();
@@ -223,6 +224,22 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
 
     effect(() => {
       invokes.push(counter.peek());
+    });
+
+    assert(invokes.length === 1, 'effect not working in peek');
+    assert(invokes[0] === 0, 'peek not returning right value');
+
+    counter.value = 1;
+    assert(invokes.length === 1, 'peek not working as expected');
+  }
+
+  function testComputedPeek() {
+    const invokes = [];
+    const counter = signal(0);
+    const doubleCounter = computed(() => counter.value * 2)
+
+    effect(() => {
+      invokes.push(doubleCounter.peek());
     });
 
     assert(invokes.length === 1, 'effect not working in peek');
