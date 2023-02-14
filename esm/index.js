@@ -62,7 +62,7 @@ class Computed extends Signal {
     this.r = new Set;             // related signals
     this.s = new Reactive(v, o);  // signal
   }
-  /** @readonly */
+  peek() { return this.s.peek() }
   get value() {
     if (this.$) {
       const prev = computedSignal;
