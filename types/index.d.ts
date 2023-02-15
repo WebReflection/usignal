@@ -5,31 +5,25 @@ export function batch(callback: () => void): void;
  * @template T
  */
 export class Signal<T> {
-    /** @param {T} value the value carried along the signal. */
-    constructor(value: T);
-    /**
-     * @private
-     * @type {T}
-     */
-    private _;
+    constructor(value: any);
+    _: any;
     then<TResult1 = T, TResult2 = never>(onfulfilled?: (value: T) => TResult1 | PromiseLike<TResult1>, onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2>): Promise<TResult1 | TResult2>;
     /** @returns {T} */
     toJSON(): T;
-    /** @returns {T} */
-    toString(): T;
+    /** @returns {string} */
+    toString(): string;
     /** @returns {T} */
     valueOf(): T;
 }
 /**
  * Returns a read-only Signal that is invoked only when any of the internally
  * used signals, as in within the callback, is unknown or updated.
- * @template T
- * @type {<T>(fn: (v: T) => T, value?: T, options?: { equals?: Equals }) => Signal<T>}
+ * @type {<R, V, T = unknown extends V ? R : R|V>(fn: (v: T) => R, value?: V, options?: { equals?: Equals<T> }) => Omit<Computed<T>, '$'|'s'|'f'|'r'|'_'>}
  */
-export const computed: <T>(fn: (v: T) => T, value?: T, options?: {
-    equals?: Equals;
-}) => Signal<T>;
-export class FX extends Computed {
+export const computed: <R, V, T = unknown extends V ? R : R | V>(fn: (v: T) => R, value?: V, options?: {
+    equals?: Equals<T>;
+}) => Omit<Computed<T>, "s" | "$" | "f" | "r" | "_">;
+export class FX extends Computed<any> {
     constructor(_: any, v: any, o: any);
     e: any[];
     run(): FX;
@@ -56,20 +50,36 @@ export const effect: <T>(fn: (v: T) => T, value?: T, options?: {
 /**
  * Returns a writable Signal that side-effects whenever its value gets updated.
  * @template T
- * @type {<T>(initialValue: T, options?: { equals?: Equals }) => Signal<T> & Pick<Reactive<T>, 'peek'>}
+ * @type {<T>(initialValue: T, options?: { equals?: Equals<T> }) => Omit<Reactive<T>, '_'|'s'|'c'>}
  */
 export const signal: <T>(initialValue: T, options?: {
-    equals?: Equals;
-}) => Signal<T> & Pick<Reactive<T>, "peek">;
-export type Equals = boolean | ((prev: T, next: T) => boolean);
-declare class Computed extends Signal<any> {
-    constructor(_: any, v: any, o: any, f: any);
-    f: any;
+    equals?: Equals<T>;
+}) => Omit<Reactive<T>, "s" | "_" | "c">;
+export type Equals<T = any> = boolean | ((prev: T, next: T) => boolean);
+/**
+ * @template T
+ * @extends {Signal<T>}
+ */
+declare class Computed<T> extends Signal<T> {
+    /**
+     * @param {(v: T) => T} _
+     * @param {T} v
+     * @param {{ equals?: Equals<T> }} o
+     * @param {boolean} f
+     */
+    constructor(_: (v: T) => T, v: T, o: {
+        equals?: Equals<T>;
+    }, f: boolean);
+    /**
+     * @private
+     * @type{Reactive<T>}
+     */
+    private s;
+    f: boolean;
     $: boolean;
     r: Set<any>;
-    s: Reactive<any>;
-    /** @readonly */
-    readonly get value(): any;
+    peek(): T;
+    get value(): T;
 }
 /**
  * @template T
@@ -86,8 +96,8 @@ declare class Reactive<T> extends Signal<T> {
      * @returns {T}
      */
     peek(): T;
-    set value(arg: any);
-    get value(): any;
-    _: any;
+    set value(arg: T);
+    /** @returns {T} */
+    get value(): T;
 }
 export {};
