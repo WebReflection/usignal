@@ -93,7 +93,7 @@ const defaults = {async: false, equals: true};
 /**
  * Returns a read-only Signal that is invoked only when any of the internally
  * used signals, as in within the callback, is unknown or updated.
- * @type {<R, V, T = unknown extends V ? R : R|V>(fn: (v: T) => R, value?: V, options?: { equals?: Equals<T> }) => Omit<Computed<T>, '$'|'s'|'f'|'r'|'_'>}
+ * @type {<R, V, T = unknown extends V ? R : R|V>(fn: (v: T) => R, value?: V, options?: { equals?: Equals<T> }) => ComputedSignal<T>}
  */
 const computed = (fn, value, options = defaults) =>
                           new Computed(fn, value, options, false);
@@ -254,7 +254,7 @@ class Reactive extends Signal {
 /**
  * Returns a writable Signal that side-effects whenever its value gets updated.
  * @template T
- * @type {<T>(initialValue: T, options?: { equals?: Equals<T> }) => Omit<Reactive<T>, '_'|'s'|'c'>}
+ * @type {<T>(initialValue: T, options?: { equals?: Equals<T> }) => ReactiveSignal<T>}
  */
 const signal = (value, options = defaults) => new Reactive(value, options);
 exports.signal = signal;
@@ -262,4 +262,16 @@ exports.signal = signal;
 /**
  * @template [T=any]
  * @typedef {boolean | ((prev: T, next: T) => boolean)} Equals
+ */
+
+/**
+ * @public
+ * @template T
+ * @typedef {Omit<Reactive<T>, '_'|'s'|'c'>} ReactiveSignal<T>
+ */
+
+/**
+ * @public
+ * @template T
+ * @typedef {Omit<Computed<T>, '$'|'s'|'f'|'r'|'_'>} ComputedSignal<T>
  */

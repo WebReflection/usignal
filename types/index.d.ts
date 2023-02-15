@@ -18,11 +18,11 @@ export class Signal<T> {
 /**
  * Returns a read-only Signal that is invoked only when any of the internally
  * used signals, as in within the callback, is unknown or updated.
- * @type {<R, V, T = unknown extends V ? R : R|V>(fn: (v: T) => R, value?: V, options?: { equals?: Equals<T> }) => Omit<Computed<T>, '$'|'s'|'f'|'r'|'_'>}
+ * @type {<R, V, T = unknown extends V ? R : R|V>(fn: (v: T) => R, value?: V, options?: { equals?: Equals<T> }) => ComputedSignal<T>}
  */
 export const computed: <R, V, T = unknown extends V ? R : R | V>(fn: (v: T) => R, value?: V, options?: {
     equals?: Equals<T>;
-}) => Omit<Computed<T>, "s" | "$" | "f" | "r" | "_">;
+}) => ComputedSignal<T>;
 export class FX extends Computed<any> {
     constructor(_: any, v: any, o: any);
     e: any[];
@@ -50,12 +50,20 @@ export const effect: <T>(fn: (v: T) => T, value?: T, options?: {
 /**
  * Returns a writable Signal that side-effects whenever its value gets updated.
  * @template T
- * @type {<T>(initialValue: T, options?: { equals?: Equals<T> }) => Omit<Reactive<T>, '_'|'s'|'c'>}
+ * @type {<T>(initialValue: T, options?: { equals?: Equals<T> }) => ReactiveSignal<T>}
  */
 export const signal: <T>(initialValue: T, options?: {
     equals?: Equals<T>;
-}) => Omit<Reactive<T>, "s" | "_" | "c">;
+}) => ReactiveSignal<T>;
 export type Equals<T = any> = boolean | ((prev: T, next: T) => boolean);
+/**
+ * <T>
+ */
+export type ReactiveSignal<T> = Omit<Reactive<T>, '_' | 's' | 'c'>;
+/**
+ * <T>
+ */
+export type ComputedSignal<T> = Omit<Computed<T>, '$' | 's' | 'f' | 'r' | '_'>;
 /**
  * @template T
  * @extends {Signal<T>}
