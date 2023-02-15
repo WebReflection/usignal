@@ -1,7 +1,8 @@
-import { signal, computed } from '..'
+import { signal, computed, ReactiveSignal, ComputedSignal } from '..'
 import {expectTypeOf} from 'expect-type'
 
 const sig = signal(123)
+expectTypeOf(sig).toEqualTypeOf<ReactiveSignal<number>>()
 expectTypeOf(sig.value).toEqualTypeOf<number>()
 expectTypeOf(sig.valueOf()).toEqualTypeOf<number>()
 expectTypeOf(sig.toString()).toEqualTypeOf<string>()
@@ -11,6 +12,7 @@ expectTypeOf(await sig).toEqualTypeOf<number>()
 sig.then(v => expectTypeOf(v).toEqualTypeOf<number>())
 
 const comp = computed(() => 213)
+expectTypeOf(comp).toEqualTypeOf<ComputedSignal<number>>()
 expectTypeOf(comp.value).toEqualTypeOf<number>()
 expectTypeOf(comp.valueOf()).toEqualTypeOf<number>()
 expectTypeOf(comp.toString()).toEqualTypeOf<string>()
@@ -20,6 +22,7 @@ expectTypeOf(await comp).toEqualTypeOf<number>()
 comp.then(v => expectTypeOf(v).toEqualTypeOf<number>())
 
 const compMix = computed(() => 'asd', 123)
+expectTypeOf(compMix).toEqualTypeOf<ComputedSignal<number | string>>()
 expectTypeOf(compMix.value).toEqualTypeOf<number | string>()
 expectTypeOf(compMix.valueOf()).toEqualTypeOf<number | string>()
 expectTypeOf(compMix.toString()).toEqualTypeOf<string>()
