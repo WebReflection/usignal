@@ -90,7 +90,7 @@ const defaults = {async: false, equals: true};
 /**
  * Returns a read-only Signal that is invoked only when any of the internally
  * used signals, as in within the callback, is unknown or updated.
- * @type {<R, V, T = V extends unknown ? R : R|V>(fn: (v: T) => R, value?: V, options?: { equals?: Equals<T> }) => Omit<Computed<T>, '$'|'s'|'f'|'r'|'_'>}
+ * @type {<R, V, T = unknown extends V ? R : R|V>(fn: (v: T) => R, value?: V, options?: { equals?: Equals<T> }) => Omit<Computed<T>, '$'|'s'|'f'|'r'|'_'>}
  */
 export const computed = (fn, value, options = defaults) =>
                           new Computed(fn, value, options, false);
