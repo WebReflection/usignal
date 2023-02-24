@@ -7,7 +7,6 @@ export function batch(callback: () => void): void;
 export class Signal<T> {
     constructor(value: any);
     _: any;
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: (value: T) => TResult1 | PromiseLike<TResult1>, onrejected?: (reason: any) => TResult2 | PromiseLike<TResult2>): Promise<TResult1 | TResult2>;
     /** @returns {T} */
     toJSON(): T;
     /** @returns {string} */

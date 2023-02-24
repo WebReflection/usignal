@@ -33,11 +33,6 @@ class Signal {
     this._ = value;
   }
 
-  /**
-   * @type {Promise<T>['then']}
-   */
-  then(onfulfilled) { return Promise.resolve(this.value).then(onfulfilled) }
-
   /** @returns {T} */
   toJSON() { return this.value }
 
