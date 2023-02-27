@@ -70,8 +70,6 @@ To allow developers to try and use different patterns there are a few variants o
 
   * both `signal(value[, options])` and `computed(fn[, value[, options]])` accept an optionally *options* argument, currently implementing [equals](https://www.solidjs.com/docs/latest#options) as explained in *silid-js* documentation.
 
-  * both *signal* and *computed* also implement a *thenable* interface that can be used to `await signal` or `await computed` without needing to use `await signal.value` or `await computed.value` out of [this poll](https://twitter.com/WebReflection/status/1571400086902476801).
-
   * both *signal* and *computed* also have a `toJSON` and a `valueOf()` allowing to implicitly use their values, e.g.
 
 ```js
