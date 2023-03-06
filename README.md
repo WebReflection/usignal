@@ -68,7 +68,7 @@ To allow developers to try and use different patterns there are a few variants o
 
   * effect passes along its initial value or the previoulsy returned one. If this is a function though, it runs it before re-executing, passing along its returned value, if any.
 
-  * both `signal(value[, options])` and `computed(fn[, value[, options]])` accept an optionally *options* argument, currently implementing [equals](https://www.solidjs.com/docs/latest#options) as explained in *silid-js* documentation.
+  * both `signal(value[, options])` and `computed(fn[, value[, options]])` accept an optionally *options* argument, currently implementing [equals](https://www.solidjs.com/docs/latest#options) as explained in *solid-js* documentation.
 
   * both *signal* and *computed* also have a `toJSON` and a `valueOf()` allowing to implicitly use their values, e.g.
 
