@@ -12,6 +12,7 @@
  import * as preact from '@preact/signals-core';
  import * as usignal from '../esm/index.js';
  import * as signal from '@webreflection/signal';
+ import * as native from 'native-signals';
  import Table from 'cli-table';
  
  const RUNS_PER_TIER = 150;
@@ -51,6 +52,7 @@
      cellx: { fn: runCellx, runs: [] },
      usignal: { fn: runUsignal, runs: [] },
      signal: { fn: runSignal, runs: [] },
+     native: { fn: runNative, runs: [] },
    };
  
    for (const lib of Object.keys(report)) {
@@ -366,6 +368,51 @@
   
       const end = layer;
       const solution = [end.a.value, end.b.value, end.c.value, end.d.value];
+      const endTime = performance.now() - startTime;
+  
+      done(isSolution(layers, solution) ? endTime : -1);
+    });
+  }
+ 
+ /**
+  * @see {@link https://github.com/stackblitz/native-signals}
+  */
+  function runNative(layers, done) {
+    const a = native.signal(1),
+      b = native.signal(2),
+      c = native.signal(3),
+      d = native.signal(4);
+  
+    const start = { a, b, c, d };
+  
+    let layer = start;
+  
+    for (let i = layers; i--; ) {
+      // @ts-expect-error
+      layer = ((m) => {
+        const props = {
+          a: native.computed(() => rand % 2 ? m.b.get() : m.c.get()),
+          b: native.computed(() => m.a.get() - m.c.get()),
+          c: native.computed(() => m.b.get() + m.d.get()),
+          d: native.computed(() => m.c.get()),
+        };
+  
+        return props;
+      })(layer);
+    }
+  
+    const startTime = performance.now();
+  
+    const run = BATCHED ? (fn) => {
+      native.System.startBatch();
+      fn();
+      native.System.endBatch();
+    } : (fn) => fn();
+    run(() => {
+      (a.set(4)), (b.set(3)), (c.set(2)), (d.set(1));
+  
+      const end = layer;
+      const solution = [end.a.get(), end.b.get(), end.c.get(), end.d.get()];
       const endTime = performance.now() - startTime;
   
       done(isSolution(layers, solution) ? endTime : -1);
