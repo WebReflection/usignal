@@ -6,7 +6,7 @@
     "cellx": "latest",
     "cli-table": "latest",
     "kleur": "latest",
-    "native-signals": "latest",
+    "alien-signals": "latest",
     "s-js": "latest",
     "solid-js": "latest"
   }
