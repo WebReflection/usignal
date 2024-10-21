@@ -12,7 +12,7 @@
  import * as preact from '@preact/signals-core';
  import * as usignal from '../esm/index.js';
  import * as signal from '@webreflection/signal';
- import * as native from 'native-signals';
+ import * as alien from 'alien-signals';
  import Table from 'cli-table';
  
  const RUNS_PER_TIER = 150;
@@ -52,7 +52,7 @@
      cellx: { fn: runCellx, runs: [] },
      usignal: { fn: runUsignal, runs: [] },
      signal: { fn: runSignal, runs: [] },
-     native: { fn: runNative, runs: [] },
+     alien: { fn: runAlien, runs: [] },
    };
  
    for (const lib of Object.keys(report)) {
@@ -377,24 +377,23 @@
  /**
   * @see {@link https://github.com/stackblitz/native-signals}
   */
-  function runNative(layers, done) {
-    const a = native.signal(1),
-      b = native.signal(2),
-      c = native.signal(3),
-      d = native.signal(4);
+  function runAlien(layers, done) {
+    const a = alien.signal(1),
+      b = alien.signal(2),
+      c = alien.signal(3),
+      d = alien.signal(4);
   
     const start = { a, b, c, d };
   
     let layer = start;
   
     for (let i = layers; i--; ) {
-      // @ts-expect-error
       layer = ((m) => {
         const props = {
-          a: native.computed(() => rand % 2 ? m.b.get() : m.c.get()),
-          b: native.computed(() => m.a.get() - m.c.get()),
-          c: native.computed(() => m.b.get() + m.d.get()),
-          d: native.computed(() => m.c.get()),
+          a: alien.computed(() => rand % 2 ? m.b.get() : m.c.get()),
+          b: alien.computed(() => m.a.get() - m.c.get()),
+          c: alien.computed(() => m.b.get() + m.d.get()),
+          d: alien.computed(() => m.c.get()),
         };
   
         return props;
@@ -404,9 +403,9 @@
     const startTime = performance.now();
   
     const run = BATCHED ? (fn) => {
-      native.System.startBatch();
+      alien.startBatch();
       fn();
-      native.System.endBatch();
+      alien.endBatch();
     } : (fn) => fn();
     run(() => {
       (a.set(4)), (b.set(3)), (c.set(2)), (d.set(1));
