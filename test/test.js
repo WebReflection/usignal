@@ -248,6 +248,7 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
 
     counter.value = 1;
     assert(invokes.length === 1, 'computed peek not working as expected');
+    assert(doubleCounter.peek() === 2, 'computed peek not returning right value');
   }
 
   function testComputedUniqueness() {
@@ -358,7 +359,7 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
 
     assert(invokes.length === 3, 'looped effects not working');
     assert(invokes.join(',') === '0,0,1', 'looped values not matching');
-  
+
     invokes.splice(0);
     loop = 1;
     num.value = 1;
