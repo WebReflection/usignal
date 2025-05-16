@@ -85,6 +85,7 @@ declare class Computed<T> extends Signal<T> {
     f: boolean;
     $: boolean;
     r: Set<any>;
+    refresh(): void;
     peek(): T;
     get value(): T;
 }

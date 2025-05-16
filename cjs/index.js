@@ -56,10 +56,10 @@ class Computed extends Signal {
    */
   s
   /**
-   * @param {(v: T) => T} _ 
-   * @param {T} v 
+   * @param {(v: T) => T} _
+   * @param {T} v
    * @param {{ equals?: Equals<T> }} o
-   * @param {boolean} f 
+   * @param {boolean} f
    */
   constructor(_, v, o, f) {
     super(_);
@@ -68,17 +68,23 @@ class Computed extends Signal {
     this.r = new Set;             // related signals
     this.s = new Reactive(v, o);  // signal
   }
-  peek() { return this.s.peek() }
-  get value() {
-    if (this.$) {
-      const prev = computedSignal;
-      computedSignal = this;
-      try { this.s.value = this._(this.s._) }
-      finally {
-        this.$ = false;
-        computedSignal = prev;
-      }
+  refresh() {
+    if (!this.$) return
+
+    const prev = computedSignal;
+    computedSignal = this;
+    try { this.s.value = this._(this.s._) }
+    finally {
+      this.$ = false;
+      computedSignal = prev;
     }
+  }
+  peek() {
+    this.refresh()
+    return this.s.peek()
+  }
+  get value() {
+    this.refresh()
     return this.s.value;
   }
 }
@@ -159,7 +165,7 @@ exports.Effect = Effect
 
 /**
  * Invokes a function when any of its internal signals or computed values change.
- * 
+ *
  * Returns a dispose callback.
  * @template T
  * @type {<T>(fn: (v: T) => T, value?: T, options?: { async?: boolean }) => () => void}
