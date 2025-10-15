@@ -10,6 +10,7 @@
  // @ts-expect-error
  import * as solid from './solid-js-baseline.js';
  import * as preact from '@preact/signals-core';
+ import * as dom_cue from 'dom-cue';
  import * as usignal from '../esm/index.js';
  import * as signal from '@webreflection/signal';
  import * as alien from 'alien-signals';
@@ -47,12 +48,13 @@
      S: { fn: runS, runs: [] },
      solid: { fn: runSolid, runs: [] },
      'preact/signals': { fn: runPreact, runs: [] },
+     'dom-cue': { fn: runDOMCue, runs: [] },
      // TODO: running too slow so I need to leave it out for now - maybe something is wrong.
      // sinuous: { fn: runSinuous, runs: [] },
-     cellx: { fn: runCellx, runs: [] },
+     // cellx: { fn: runCellx, runs: [] },
      usignal: { fn: runUsignal, runs: [] },
      signal: { fn: runSignal, runs: [] },
-     alien: { fn: runAlien, runs: [] },
+     // alien: { fn: runAlien, runs: [] },
    };
  
    for (const lib of Object.keys(report)) {
@@ -243,6 +245,43 @@
      done(isSolution(layers, solution) ? endTime : -1);
    });
  }
+
+ function runDOMCue(layers, done) {
+  const a = dom_cue.signal(1),
+    b = dom_cue.signal(2),
+    c = dom_cue.signal(3),
+    d = dom_cue.signal(4);
+
+  const start = { a, b, c, d };
+
+  let layer = start;
+
+  for (let i = layers; i--; ) {
+    layer = ((m) => {
+      const props = {
+        a: dom_cue.computed(() => rand % 2 ? m.b.value : m.c.value),
+        b: dom_cue.computed(() => m.a.value - m.c.value),
+        c: dom_cue.computed(() => m.b.value + m.d.value),
+        d: dom_cue.computed(() => m.c.value),
+      };
+
+      return props;
+    })(layer);
+  }
+
+  const startTime = performance.now();
+
+  const run = BATCHED ? dom_cue.batch : (fn) => fn();
+  run(() => {
+    (a.value = 4), (b.value = 3), (c.value = 2), (d.value = 1);
+
+    const end = layer;
+    const solution = [end.a.value, end.b.value, end.c.value, end.d.value];
+    const endTime = performance.now() - startTime;
+
+    done(isSolution(layers, solution) ? endTime : -1);
+  });
+}
  
  /**
   * @see {@link https://github.com/Riim/cellx}

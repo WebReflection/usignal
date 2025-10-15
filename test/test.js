@@ -31,7 +31,7 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
 
   assert(signal(0) instanceof Signal, 'signals are not instances of Signal');
 
-  if (/^(?:usignal|@preact\/signals-core)$/.test(library)) {
+  if (/^(?:usignal|dom-cue|@preact\/signals-core)$/.test(library)) {
     assert(computed(() => {}) instanceof Signal, 'computeds are not instances of Signal');
     let calls = 0;
     const $ = signal(0);
@@ -62,7 +62,7 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
   if (!/^(?:@webreflection\/signal)$/.test(library))
     testComputedMoar();
 
-  if (/^(?:usignal|@preact\/signals-core|@webreflection\/signal)$/.test(library))
+  if (/^(?:usignal|dom-cue|@preact\/signals-core|@webreflection\/signal)$/.test(library))
     implicitToString();
 
   if (!/^(?:@webreflection\/signal)$/.test(library)) {
@@ -264,10 +264,10 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
     assert(fullName.value === 'Jane Doe', 'computed not working');
     assert(invokes === 1, 'computed value should have been invoked once');
     name.value = 'John';
-    if (/^(?:usignal|@preact\/signals-core|@webreflection\/signal)$/.test(library)) fullName.value;
+    if (/^(?:usignal|dom-cue|@preact\/signals-core|@webreflection\/signal)$/.test(library)) fullName.value;
     assert(invokes === 2, 'computed value should have been invoked again');
     name.value = 'John';
-    if (/^(?:usignal|@preact\/signals-core|@webreflection\/signal)$/.test(library)) fullName.value;
+    if (/^(?:usignal|dom-cue|@preact\/signals-core|@webreflection\/signal)$/.test(library)) fullName.value;
     assert(invokes === 2, 'computed value should NOT have been invoked again');
   }
 
@@ -364,7 +364,7 @@ export default (library, {signal, computed, effect, batch, Signal}) => {
     loop = 1;
     num.value = 1;
 
-    if (!/^(?:@preact\/signals-core)$/.test(library)) {
+    if (!/^(?:@preact\/signals-core|dom-cue)$/.test(library)) {
       assert(invokes.length === 2, 'looped effects not working after changes');
       assert(invokes.join(',') === '1,1', 'looped values not matching after changes');
     }

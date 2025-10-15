@@ -3,10 +3,11 @@
   "devDependencies": {
     "@preact/signals-core": "latest",
     "@webreflection/signal": "latest",
+    "alien-signals": "latest",
     "cellx": "latest",
     "cli-table": "latest",
+    "dom-cue": "^0.2.0",
     "kleur": "latest",
-    "alien-signals": "latest",
     "s-js": "latest",
     "solid-js": "latest"
   }
