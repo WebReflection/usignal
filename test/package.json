@@ -6,7 +6,7 @@
     "alien-signals": "latest",
     "cellx": "latest",
     "cli-table": "latest",
-    "dom-cue": "^0.2.0",
+    "dom-cue": "^0.2.3",
     "kleur": "latest",
     "s-js": "latest",
     "solid-js": "latest"
