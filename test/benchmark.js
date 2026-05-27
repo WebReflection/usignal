@@ -47,15 +47,15 @@
  async function main() {
    const report = {
      S: { fn: runS, runs: [] },
-     solid: { fn: runSolid, runs: [] },
+    //  solid: { fn: runSolid, runs: [] },
      'preact/signals': { fn: runPreact, runs: [] },
-     'dom-cue': { fn: runDOMCue, runs: [] },
+    //  'dom-cue': { fn: runDOMCue, runs: [] },
      // TODO: running too slow so I need to leave it out for now - maybe something is wrong.
      // sinuous: { fn: runSinuous, runs: [] },
      // cellx: { fn: runCellx, runs: [] },
      usignal: { fn: runUsignal, runs: [] },
-     signal: { fn: runSignal, runs: [] },
-     signals: { fn: runPreact, runs: [] },
+    //  signal: { fn: runSignal, runs: [] },
+     signals: { fn: runSignals, runs: [] },
      // alien: { fn: runAlien, runs: [] },
    };
  
@@ -247,6 +247,43 @@
      done(isSolution(layers, solution) ? endTime : -1);
    });
  }
+
+ function runSignals(layers, done) {
+  const a = signals.signal(1),
+    b = signals.signal(2),
+    c = signals.signal(3),
+    d = signals.signal(4);
+
+  const start = { a, b, c, d };
+
+  let layer = start;
+
+  for (let i = layers; i--; ) {
+    layer = ((m) => {
+      const props = {
+        a: signals.computed(() => rand % 2 ? m.b.value : m.c.value),
+        b: signals.computed(() => m.a.value - m.c.value),
+        c: signals.computed(() => m.b.value + m.d.value),
+        d: signals.computed(() => m.c.value),
+      };
+
+      return props;
+    })(layer);
+  }
+
+  const startTime = performance.now();
+
+  const run = BATCHED ? signals.batch : (fn) => fn();
+  run(() => {
+    (a.value = 4), (b.value = 3), (c.value = 2), (d.value = 1);
+
+    const end = layer;
+    const solution = [end.a.value, end.b.value, end.c.value, end.d.value];
+    const endTime = performance.now() - startTime;
+
+    done(isSolution(layers, solution) ? endTime : -1);
+  });
+}
 
  function runDOMCue(layers, done) {
   const a = dom_cue.signal(1),

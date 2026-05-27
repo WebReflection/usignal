@@ -95,6 +95,8 @@ npm run benchmark
 
 ![current status](./test/benchmark.png)
 
+About last **signals** row: [@webreflection/signals](https://github.com/WebReflection/signals#readme) is my latest minimalistic attempt and the last one shown in above benchmark as drop-in replacement for Preact benchmark.
+
 
 ## Tests
 
