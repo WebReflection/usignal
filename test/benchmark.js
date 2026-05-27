@@ -13,6 +13,7 @@
  import * as dom_cue from 'dom-cue';
  import * as usignal from '../esm/index.js';
  import * as signal from '@webreflection/signal';
+ import * as signals from '@webreflection/signals';
  import * as alien from 'alien-signals';
  import Table from 'cli-table';
  
@@ -54,6 +55,7 @@
      // cellx: { fn: runCellx, runs: [] },
      usignal: { fn: runUsignal, runs: [] },
      signal: { fn: runSignal, runs: [] },
+     signals: { fn: runPreact, runs: [] },
      // alien: { fn: runAlien, runs: [] },
    };
  
