@@ -14,6 +14,7 @@
  import * as usignal from '../esm/index.js';
  import * as signal from '@webreflection/signal';
  import * as signals from '@webreflection/signals';
+//  import * as signals from '../../signals/src/index.js';
  import * as alien from 'alien-signals';
  import Table from 'cli-table';
  
